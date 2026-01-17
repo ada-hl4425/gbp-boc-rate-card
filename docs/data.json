@@ -5,8 +5,10 @@
   "rate_cny_per_gbp": 9.3706,
   "rate_cny_per_100_gbp": 937.06,
   "publish_time_raw": "2026/01/18 00:00:05",
-  "fetched_at_utc": "2026-01-17T21:06:59.996971+00:00",
-  "fetched_at_beijing": "2026-01-17 21:06:59",
+  "fetched_at_utc": "2026-01-17T21:27:16.861475+00:00",
+  "fetched_at_beijing": "2026-01-17 21:27:16",
   "source": "https://www.boc.cn/sourcedb/whpj/",
-  "status": "success"
+  "status": "success",
+  "rate_change": 0.0,
+  "rate_change_percent": 0.0
 }
