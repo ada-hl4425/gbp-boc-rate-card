@@ -9,7 +9,7 @@
     body { 
       margin: 0; 
       font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; 
-      background: #fff0f5;
+      background: #ffffff;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -26,17 +26,6 @@
       position: relative; 
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    }
-    
-    /* 网格背景 */
-    .grid { 
-      position: absolute; 
-      inset: 0; 
-      background-image: 
-        linear-gradient(#f0f0f0 1px, transparent 1px),
-        linear-gradient(90deg, #f0f0f0 1px, transparent 1px); 
-      background-size: 40px 40px; 
-      opacity: 0.6; 
     }
     
     .content { 
@@ -78,10 +67,12 @@
     .main { 
       display: flex; 
       align-items: center; 
-      justify-content: space-between; 
+      justify-content: flex-start;
       margin-top: auto;
       margin-bottom: auto;
       gap: clamp(20px, 4vw, 40px);
+      position: relative;
+      min-height: 280px;
     }
     
     .left { 
@@ -144,14 +135,17 @@
       width: clamp(180px, 23vw, 260px); 
       height: clamp(180px, 23vw, 260px); 
       border-radius: 16px; 
-      background: #ffe6f2;
+      background: #ffffff;
       display: flex; 
-      align-items: center; 
+      align-items: flex-end;
       justify-content: center; 
       font-weight: 700; 
       color: #c2185b;
       font-size: clamp(14px, 1.6vw, 18px);
       flex-shrink: 0;
+      position: absolute;
+      right: clamp(20px, 2.5vw, 40px);
+      bottom: clamp(65px, 8vw, 95px);
     }
     
     .illustration img {
@@ -171,6 +165,7 @@
       font-weight: 600; 
       text-align: right;
       line-height: 1.5;
+      z-index: 5;
     }
     
     /* 加载和错误状态 */
@@ -194,14 +189,20 @@
     /* 响应式调整 */
     @media (max-width: 768px) {
       .main { flex-direction: column; gap: 24px; }
-      .illustration { width: 160px; height: 160px; }
+      .illustration { 
+        width: 140px; 
+        height: 140px;
+        right: 15px;
+        bottom: 50px;
+      }
+      .foot {
+        max-width: calc(100% - 160px);
+      }
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="grid"></div>
-    
     <div class="loading" id="loading">正在加载数据...</div>
     
     <div class="error hidden" id="error">
@@ -213,7 +214,7 @@
       <div class="header">
         <h1 class="h1">今日英镑购汇价格</h1>
         <div class="sub">中国银行 | 现汇卖出价（用人民币购买英镑）</div>
-        <div class="date" id="date">日期：--</div>
+        <div class="date" id="date">🇬🇧 日期：-- (UTC+0)</div>
       </div>
 
       <div class="main">
@@ -230,14 +231,14 @@
         
         <div class="illustration">
           <!-- 如需替换为图片: <img src="hello-kitty.png" alt="Hello Kitty"> -->
-          <img src="hello-kitty.png" alt="Hello Kitty">
+          <div>💷→💴</div>
         </div>
       </div>
 
       <div class="foot" id="foot">
         数据来源：中国银行外汇牌价<br/>
         价格类型：现汇卖出价<br/>
-        更新时间：--
+        🇬🇧 更新时间：-- (UTC+0)
       </div>
     </div>
   </div>
@@ -257,13 +258,15 @@
   function formatDateTime(isoString) {
     try {
       const date = new Date(isoString);
-      return date.toLocaleString('zh-CN', {
+      // 格式化为英国时间（UTC+0）
+      return date.toLocaleString('en-GB', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: false,
+        timeZone: 'Europe/London'
       });
     } catch {
       return isoString;
@@ -292,7 +295,7 @@
     
     // 更新日期
     const dateStr = data.publish_time_raw || data.fetched_at_beijing || '--';
-    elements.date.textContent = `日期: ${dateStr.split(' ')[0] || dateStr}`;
+    elements.date.textContent = `🇬🇧 日期: ${dateStr.split(' ')[0] || dateStr} (UTC+0)`;
     
     // 更新汇率
     const rate = data.rate_cny_per_gbp || '--';
@@ -315,7 +318,7 @@
     elements.foot.innerHTML = `
       数据来源: 中国银行外汇牌价<br/>
       价格类型: ${data.boc_field || '现汇卖出价'}<br/>
-      更新时间: ${updateTime}
+      🇬🇧 更新时间: ${updateTime} (UTC+0)
     `;
     
     showContent();
