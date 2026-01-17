@@ -230,7 +230,6 @@
         </div>
         
         <div class="illustration">
-          <!-- 如需替换为图片: <img src="hello-kitty.png" alt="Hello Kitty"> -->
           <img src="hello-kitty.png" alt="Hello Kitty">
         </div>
       </div>
@@ -293,9 +292,22 @@
       return;
     }
     
-    // 更新日期
-    const dateStr = data.publish_time_raw || data.fetched_at_beijing || '--';
-    elements.date.textContent = `🇬🇧 日期: ${dateStr.split(' ')[0] || dateStr} (UTC+0)`;
+    // 更新日期 - 使用英式格式与页脚统一
+    let dateDisplay = '--';
+    if (data.fetched_at_utc) {
+      try {
+        const date = new Date(data.fetched_at_utc);
+        dateDisplay = date.toLocaleDateString('en-GB', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          timeZone: 'Europe/London'
+        });
+      } catch (e) {
+        dateDisplay = data.publish_time_raw ? data.publish_time_raw.split(' ')[0] : '--';
+      }
+    }
+    elements.date.textContent = `🇬🇧 日期: ${dateDisplay} (UTC+0)`;
     
     // 更新汇率
     const rate = data.rate_cny_per_gbp || '--';
