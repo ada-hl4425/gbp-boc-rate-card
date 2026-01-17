@@ -1,0 +1,163 @@
+name: Update BOC GBP Rate
+
+on:
+  schedule:
+    # 每2小时运行一次（北京时间 8:00, 10:00, 12:00, etc）
+    - cron: "0 0,2,4,6,8,10,12,14,16,18,20,22 * * *"
+  
+  workflow_dispatch:  # 允许手动触发
+  
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/update.yml'
+
+permissions:
+  contents: write
+  issues: write  # 用于创建 issue 通知失败
+
+jobs:
+  update-rate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # 需要历史记录以检测变化
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install beautifulsoup4
+      
+      - name: Fetch BOC GBP rate
+        id: fetch
+        run: |
+          python scripts/fetch_boc_gbp.py
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git diff --quiet docs/data.json || echo "changed=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git commit -m "Update BOC GBP rate - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          git push
+      
+      - name: Read rate data
+        id: read_rate
+        if: always()
+        run: |
+          if [ -f docs/data.json ]; then
+            RATE=$(python3 -c "import json; data=json.load(open('docs/data.json')); print(data.get('rate_cny_per_gbp', 'N/A'))")
+            STATUS=$(python3 -c "import json; data=json.load(open('docs/data.json')); print(data.get('status', 'unknown'))")
+            echo "rate=$RATE" >> $GITHUB_OUTPUT
+            echo "status=$STATUS" >> $GITHUB_OUTPUT
+          else
+            echo "rate=N/A" >> $GITHUB_OUTPUT
+            echo "status=file_missing" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create failure issue
+        if: failure() || steps.read_rate.outputs.status == 'error'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '🚨 BOC GBP Rate Update Failed';
+            const body = `
+            ## Workflow Run Failed
+            
+            - **Run ID**: ${{ github.run_id }}
+            - **Run URL**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - **Timestamp**: ${new Date().toISOString()}
+            - **Current Rate Status**: ${{ steps.read_rate.outputs.status }}
+            - **Current Rate Value**: ${{ steps.read_rate.outputs.rate }}
+            
+            ### Next Steps
+            1. Check the workflow logs for detailed error messages
+            2. Verify if BOC website structure has changed
+            3. Test the script locally: \`python scripts/fetch_boc_gbp.py\`
+            
+            ---
+            *This issue was automatically created by GitHub Actions*
+            `;
+            
+            // 检查是否已有打开的相同issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['automated', 'rate-update-failure']
+            });
+            
+            if (issues.data.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['automated', 'rate-update-failure']
+              });
+            } else {
+              // 更新现有issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `Another failure occurred:\n\n${body}`
+              });
+            }
+      
+      - name: Close success issues
+        if: success() && steps.read_rate.outputs.status == 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['automated', 'rate-update-failure']
+            });
+            
+            for (const issue of issues.data) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed'
+              });
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '✅ Rate update is working again. Auto-closing this issue.'
+              });
+            }
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Rate Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ${{ steps.read_rate.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Rate**: 1 GBP = ${{ steps.read_rate.outputs.rate }} CNY" >> $GITHUB_STEP_SUMMARY
+          echo "- **Changes**: ${{ steps.check_changes.outputs.changed || 'No changes' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
