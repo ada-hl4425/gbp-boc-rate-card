@@ -72,7 +72,6 @@
       margin-bottom: auto;
       gap: clamp(20px, 4vw, 40px);
       position: relative;
-      min-height: 280px;
     }
     
     .left { 
@@ -130,7 +129,7 @@
     .change.down { color: #388e3c; }
     .change.neutral { color: #666; }
     
-    /* 右侧装饰 */
+    /* 右侧装饰 - 独立元素，不受 flex 容器限制 */
     .illustration { 
       width: clamp(220px, 28vw, 320px); 
       height: clamp(220px, 28vw, 320px); 
@@ -139,13 +138,11 @@
       display: flex; 
       align-items: flex-end;
       justify-content: center; 
-      font-weight: 700; 
-      color: #c2185b;
-      font-size: clamp(14px, 1.6vw, 18px);
       flex-shrink: 0;
       position: absolute;
       right: clamp(20px, 2.5vw, 40px);
-      bottom: clamp(50px, 6.5vw, 75px);
+      bottom: clamp(55px, 7vw, 80px);
+      z-index: 1;
     }
     
     .illustration img {
@@ -230,10 +227,11 @@
           </div>
           <div class="change hidden" id="change">较上次: --</div>
         </div>
-        
-        <div class="illustration">
-          <img src="hello-kitty.png" alt="Hello Kitty">
-        </div>
+      </div>
+      
+      <!-- Hello Kitty 独立元素，不受 flex 容器限制 -->
+      <div class="illustration">
+        <img src="hello-kitty.png" alt="Hello Kitty">
       </div>
 
       <div class="foot" id="foot">
