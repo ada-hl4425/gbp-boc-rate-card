@@ -15,17 +15,6 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      position: relative;
-    }
-    
-    /* 截图容器：包含粉色背景 */
-    .screenshot-container {
-      background: #fff0f5;
-      padding: 60px;
-      border-radius: 20px;
-      display: inline-block;
-      max-width: 100%;
-      width: auto;
     }
     
     .card { 
@@ -198,10 +187,6 @@
     
     /* 响应式调整 */
     @media (max-width: 768px) {
-      .screenshot-container {
-        padding: 30px;
-      }
-      
       .main { flex-direction: column; gap: 24px; }
       .illustration { 
         width: 180px; 
@@ -213,52 +198,10 @@
         max-width: calc(100% - 200px);
       }
     }
-    
-    /* 截图按钮 */
-    .screenshot-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      transition: all 0.3s ease;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .screenshot-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-    
-    .screenshot-btn:active {
-      transform: translateY(0);
-    }
-    
-    .screenshot-btn.capturing {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
   </style>
 </head>
 <body>
-  <!-- 截图按钮 -->
-  <button class="screenshot-btn" id="screenshotBtn">
-    📸 截图预览
-  </button>
-  
-  <!-- 截图区域：包含粉色背景 -->
-  <div class="screenshot-container">
-    <div class="card">
+  <div class="card">
     <div class="loading" id="loading">正在加载数据...</div>
     
     <div class="error hidden" id="error">
@@ -298,7 +241,6 @@
       </div>
     </div>
   </div>
-  <!-- /screenshot-container -->
 
 <script>
 (function() {
@@ -309,153 +251,8 @@
     date: document.getElementById('date'),
     rate: document.getElementById('rate'),
     change: document.getElementById('change'),
-    foot: document.getElementById('foot'),
-    screenshotBtn: document.getElementById('screenshotBtn')
+    foot: document.getElementById('foot')
   };
-  
-  // 截图功能 - 全屏预览模式
-  elements.screenshotBtn.addEventListener('click', function() {
-    const screenshotArea = document.querySelector('.screenshot-container');
-    
-    // 创建全屏覆盖层
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #fff0f5;
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    `;
-    
-    // 克隆截图区域
-    const clone = screenshotArea.cloneNode(true);
-    clone.style.cssText = `
-      background: #fff0f5;
-      padding: 60px;
-      border-radius: 20px;
-      width: 1220px;
-      max-width: 100%;
-      box-sizing: border-box;
-    `;
-    
-    // 设置卡片固定尺寸
-    const clonedCard = clone.querySelector('.card');
-    if (clonedCard) {
-      clonedCard.style.cssText = `
-        width: 1100px;
-        height: 618.75px;
-        max-width: 100%;
-        background: #fff;
-        border: 3px solid #111;
-        border-radius: 24px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-      `;
-    }
-    
-    // 确保 Hello Kitty 图片正确显示
-    const clonedIllustration = clone.querySelector('.illustration');
-    if (clonedIllustration) {
-      clonedIllustration.style.cssText = `
-        width: 280px;
-        height: 280px;
-        border-radius: 16px;
-        background: #ffffff;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        position: absolute;
-        right: 30px;
-        bottom: 65px;
-        z-index: 1;
-      `;
-      
-      const clonedImg = clonedIllustration.querySelector('img');
-      if (clonedImg) {
-        clonedImg.style.cssText = `
-          width: 100%;
-          height: auto;
-          object-fit: contain;
-        `;
-      }
-    }
-    
-    // 显示内容，隐藏加载/错误
-    const clonedContent = clone.querySelector('.content');
-    const clonedLoading = clone.querySelector('.loading');
-    const clonedError = clone.querySelector('.error');
-    
-    if (clonedContent) {
-      clonedContent.style.cssText = `
-        opacity: 1 !important;
-        display: flex !important;
-        flex-direction: column;
-        flex: 1;
-      `;
-    }
-    if (clonedLoading) clonedLoading.remove();
-    if (clonedError) clonedError.remove();
-    
-    // 创建提示和关闭按钮
-    const hint = document.createElement('div');
-    hint.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 15px 30px;
-      border-radius: 12px;
-      font-size: 16px;
-      z-index: 10001;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    `;
-    
-    const closeBtn = document.createElement('button');
-    closeBtn.textContent = '✕ 关闭预览';
-    closeBtn.style.cssText = `
-      position: fixed;
-      top: 100px;
-      right: 20px;
-      padding: 12px 24px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      z-index: 10001;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    `;
-    
-    closeBtn.onclick = function() {
-      document.body.removeChild(overlay);
-    };
-    
-    // 组装并显示
-    overlay.appendChild(clone);
-    overlay.appendChild(hint);
-    overlay.appendChild(closeBtn);
-    document.body.appendChild(overlay);
-    
-    // 点击背景也可以关闭
-    overlay.onclick = function(e) {
-      if (e.target === overlay) {
-        document.body.removeChild(overlay);
-      }
-    };
-  });
   
   function formatDateTime(isoString) {
     try {
