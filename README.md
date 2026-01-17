@@ -1,190 +1,216 @@
-# BOC GBP Rate Card - 中行英镑汇率卡片生成器
+# 📸 截图功能更新 - 包含粉色背景
 
-自动抓取中国银行英镑现汇卖出价，生成美观的汇率信息卡片。
+## ✅ 已修复
 
-## ✨ 特性
+### 问题
+之前截图只截了白色卡片本身，没有包含周围的粉色背景，看起来太空了。
 
-- 🔄 每2小时自动更新
-- 📊 显示汇率变化趋势
-- 🎨 精美的网页卡片设计
-- 🔔 自动失败通知（GitHub Issues）
-- 💾 数据历史记录
-- 🛡️ 完善的错误处理
+### 解决方案
+创建了 `.screenshot-container` 容器包裹卡片，这个容器有：
+- ✅ 粉色背景 `#fff0f5`
+- ✅ 60px 内边距（四周留白）
+- ✅ 圆角边框
+- ✅ 响应式设计（手机上自动缩小 padding）
 
-## 📁 项目结构
+## 🎨 现在的截图效果
 
 ```
-gbp-boc-rate-card/
-├── docs/
-│   ├── index.html          # 前端页面
-│   └── data.json           # 汇率数据（自动生成）
-├── scripts/
-│   └── fetch_boc_gbp.py    # 抓取脚本
-├── .github/workflows/
-│   └── update.yml          # GitHub Actions 配置
-└── README.md
+┌──────────────────────────────────────────┐
+│                                          │
+│     粉色背景区域                          │  ← 60px padding
+│   ┌────────────────────────────┐        │
+│   │                            │        │
+│   │   今日英镑购汇价格           │        │
+│   │   (白色卡片)                │        │
+│   │                            │        │
+│   │   1 GBP = 9.3706 CNY       │        │
+│   │                            │        │
+│   │             [Hello Kitty]   │        │
+│   └────────────────────────────┘        │
+│                                          │
+│     粉色背景区域                          │  ← 60px padding
+│                                          │
+└──────────────────────────────────────────┘
 ```
 
-## 🚀 快速开始
+## 📐 截图尺寸
 
-### 1. 创建仓库
+**原始设计：**
+- 卡片：1100px 宽
+- 粉色边距：60px（上下左右各）
+- **总尺寸：1220px 宽** + 自动高度
+- **实际输出（2x）：2440px 宽** （高清）
 
-```bash
-# 在 GitHub 上创建新仓库 gbp-boc-rate-card
-git clone https://github.com/YOUR_USERNAME/gbp-boc-rate-card.git
-cd gbp-boc-rate-card
+**适合平台：**
+- ✅ 小红书（完美）
+- ✅ 微信朋友圈
+- ✅ 微博
+- ✅ Instagram Stories
 
-# 创建目录结构
-mkdir -p docs scripts .github/workflows
+## 🎯 使用方法
+
+### 步骤 1：访问网页
+```
+https://ada-hl4425.github.io/gbp-boc-rate-card/
 ```
 
-### 2. 复制文件
+### 步骤 2：等待加载
+- 看到汇率数字出现
+- Hello Kitty 图片加载完成
 
-将以下文件复制到对应目录：
-- `fetch_boc_gbp.py` → `scripts/fetch_boc_gbp.py`
-- `index.html` → `docs/index.html`
-- `update.yml` → `.github/workflows/update.yml`
+### 步骤 3：点击截图
+- 点击右上角 **"📸 截图保存"** 按钮
+- 按钮会自动隐藏
+- 等待 1-2 秒
 
-### 3. 提交到 GitHub
+### 步骤 4：自动下载
+- 文件名：`英镑汇率_2026-01-17.png`
+- 自动保存到下载文件夹
 
-```bash
-git add .
-git commit -m "Initial commit"
-git push origin main
+### 步骤 5：上传小红书
+- 打开小红书 App
+- 点击 "+" 发布
+- 选择刚才保存的图片
+- 添加标签 #英镑汇率
+- 发布！
+
+**总耗时：约 1 分钟** ⏱️
+
+## 💡 截图效果对比
+
+### ❌ 之前（只截卡片）
 ```
-
-### 4. 开通 GitHub Pages
-
-1. 进入仓库 Settings → Pages
-2. Source 选择 "Deploy from a branch"
-3. Branch 选择 `main` + `/docs` 目录
-4. 保存后等待几分钟
-
-访问：`https://YOUR_USERNAME.github.io/gbp-boc-rate-card/`
-
-### 5. 手动触发首次更新
-
-1. 进入仓库 Actions 标签
-2. 选择 "Update BOC GBP Rate" 工作流
-3. 点击 "Run workflow"
-
-## 📝 主要改进
-
-### 相比原版代码的优化：
-
-1. **更稳健的解析**
-   - 使用 BeautifulSoup 替代正则表达式
-   - 不易因网页结构微调而崩溃
-
-2. **完善的错误处理**
-   - 网络请求重试机制（最多3次）
-   - 数据范围验证（5-15 CNY/GBP）
-   - 失败时保留旧数据
-
-3. **更好的前端体验**
-   - 加载状态显示
-   - 错误提示
-   - 响应式设计
-   - 显示汇率变化趋势
-
-4. **自动化监控**
-   - 失败时自动创建 GitHub Issue
-   - 恢复时自动关闭 Issue
-   - Workflow Summary 报告
-
-5. **时间处理**
-   - 同时显示 UTC 和北京时间
-   - 更清晰的时间戳格式
-
-## 🔧 自定义
-
-### 修改更新频率
-
-编辑 `.github/workflows/update.yml` 中的 cron 表达式：
-
-```yaml
-schedule:
-  - cron: "0 */2 * * *"  # 每2小时
-  # - cron: "0 */1 * * *"  # 每1小时
-  # - cron: "0 0,8,12,16,20 * * *"  # 指定时间点
+┌────────────────────┐
+│ 今日英镑购汇价格    │  ← 白色卡片
+│ 1 GBP = 9.37 CNY  │  ← 没有留白
+│      [Kitty]       │  ← 太紧凑
+└────────────────────┘
 ```
+**问题：** 太空、太挤、不美观
 
-### 更换图片
-
-在 `docs/index.html` 中找到：
-
-```html
-<div class="illustration">
-  <div>💷→💴</div>
-</div>
+### ✅ 现在（包含背景）
 ```
-
-替换为：
-
-```html
-<div class="illustration">
-  <img src="hello-kitty.png" alt="装饰图片">
-</div>
+┌──────────────────────────┐
+│  [粉色背景留白]           │  ← 60px 留白
+│  ┌──────────────────┐   │
+│  │ 今日英镑购汇价格  │   │  ← 白色卡片
+│  │ 1 GBP = 9.37 CNY │   │  ← 有呼吸感
+│  │      [Kitty]      │   │  ← 美观舒适
+│  └──────────────────┘   │
+│  [粉色背景留白]           │  ← 60px 留白
+└──────────────────────────┘
 ```
+**优点：** 美观、大气、有设计感
 
-### 调整样式
+## 🔧 自定义调整
 
-修改 `docs/index.html` 中的 CSS 变量即可。
+### 调整粉色背景留白大小
 
-## 🐛 故障排查
+如果觉得 60px 太大或太小，修改 CSS：
 
-### 数据未更新
+```css
+.screenshot-container {
+  padding: 60px;  /* ← 改这个数值 */
+}
 
-1. 检查 Actions 页面是否有失败记录
-2. 查看 Issues 是否有自动创建的错误报告
-3. 手动运行 workflow 测试
-
-### 本地测试
-
-```bash
-# 安装依赖
-pip install beautifulsoup4
-
-# 运行脚本
-python scripts/fetch_boc_gbp.py
-
-# 查看生成的数据
-cat docs/data.json
-```
-
-### 网页显示错误
-
-1. 打开浏览器开发者工具（F12）
-2. 查看 Console 标签的错误信息
-3. 确认 `data.json` 是否存在且格式正确
-
-## 📊 数据格式
-
-`data.json` 示例：
-
-```json
-{
-  "currency": "英镑",
-  "pair": "GBP/CNY",
-  "boc_field": "现汇卖出价",
-  "rate_cny_per_gbp": 9.3654,
-  "rate_cny_per_100_gbp": 936.54,
-  "publish_time_raw": "2026-01-17 10:30:00",
-  "fetched_at_utc": "2026-01-17T10:35:22Z",
-  "fetched_at_beijing": "2026-01-17 18:35:22",
-  "source": "https://www.boc.cn/sourcedb/whpj/",
-  "status": "success",
-  "rate_change": 0.0123,
-  "rate_change_percent": 0.13
+@media (max-width: 768px) {
+  .screenshot-container {
+    padding: 30px;  /* ← 手机端的留白 */
+  }
 }
 ```
 
-## 📜 License
+**建议值：**
+- 小红书风格：`40-60px`（当前 60px）
+- Instagram 风格：`80-100px`（更宽松）
+- 紧凑风格：`20-30px`
 
-MIT
+### 调整背景颜色
 
-## 🙏 致谢
+如果想换其他颜色：
 
-- 数据来源：[中国银行外汇牌价](https://www.boc.cn/sourcedb/whpj/)
-- GitHub Actions
-- BeautifulSoup4
+```css
+.screenshot-container {
+  background: #fff0f5;  /* 当前：薰衣草粉 */
+  /* background: #ffe6f0;  浅粉色 */
+  /* background: #fff5f8;  超浅粉 */
+  /* background: #ffffff;  纯白色 */
+}
+```
+
+### 调整圆角大小
+
+```css
+.screenshot-container {
+  border-radius: 20px;  /* 当前：20px */
+  /* border-radius: 0;    无圆角 */
+  /* border-radius: 40px; 更圆润 */
+}
+```
+
+## 📱 响应式设计
+
+### 电脑屏幕（> 768px）
+- 粉色留白：60px
+- 卡片宽度：最大 1100px
+- 总宽度：约 1220px
+
+### 手机屏幕（≤ 768px）
+- 粉色留白：30px（自动缩小）
+- 卡片宽度：自适应
+- 仍然保持美观
+
+## 🎨 配色方案
+
+当前使用的粉色系：
+
+| 元素 | 颜色代码 | 说明 |
+|------|---------|------|
+| 页面背景 | `#fff0f5` | 薰衣草腮红粉 |
+| 截图背景 | `#fff0f5` | 与页面一致 |
+| 卡片背景 | `#ffffff` | 纯白色 |
+| Hello Kitty 区 | `#ffffff` | 纯白色 |
+
+**色彩和谐统一** ✨
+
+## 🚀 部署更新
+
+```bash
+cd gbp-boc-rate-card
+
+# 1. 替换 HTML 文件
+# 将新的 index_improved.html 内容复制到 docs/index.html
+
+# 2. 提交
+git add docs/index.html
+git commit -m "Update: screenshot now includes pink background padding"
+git push
+
+# 3. 等待部署（2-3分钟）
+# 然后访问网页测试截图功能
+```
+
+## ✅ 完成检查清单
+
+部署后，检查这些功能是否正常：
+
+- [ ] 页面正常加载，显示汇率数据
+- [ ] Hello Kitty 图片正确显示
+- [ ] 点击截图按钮
+- [ ] 按钮自动隐藏
+- [ ] 图片包含粉色背景
+- [ ] 图片四周有留白（60px）
+- [ ] 文件自动下载
+- [ ] 文件名包含日期
+
+## 🎉 大功告成！
+
+现在你的汇率卡片截图：
+- ✅ 包含美观的粉色背景
+- ✅ 四周有舒适的留白
+- ✅ 尺寸完全一致
+- ✅ 高清晰度（2x）
+- ✅ 一键保存
+- ✅ 完美适配小红书
+
+准备好分享到小红书了！📱✨
