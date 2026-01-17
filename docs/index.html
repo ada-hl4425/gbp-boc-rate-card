@@ -18,6 +18,15 @@
       position: relative;
     }
     
+    /* 截图容器：包含粉色背景 */
+    .screenshot-container {
+      background: #fff0f5;
+      padding: 60px;
+      border-radius: 20px;
+      display: inline-block;
+      max-width: 100%;
+    }
+    
     .card { 
       width: min(1100px, 100%); 
       aspect-ratio: 16/9; 
@@ -188,6 +197,10 @@
     
     /* 响应式调整 */
     @media (max-width: 768px) {
+      .screenshot-container {
+        padding: 30px;
+      }
+      
       .main { flex-direction: column; gap: 24px; }
       .illustration { 
         width: 180px; 
@@ -242,7 +255,9 @@
     📸 截图保存
   </button>
   
-  <div class="card">
+  <!-- 截图区域：包含粉色背景 -->
+  <div class="screenshot-container">
+    <div class="card">
     <div class="loading" id="loading">正在加载数据...</div>
     
     <div class="error hidden" id="error">
@@ -282,6 +297,7 @@
       </div>
     </div>
   </div>
+  <!-- /screenshot-container -->
 
 <!-- 引入 html2canvas 库用于截图 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -302,7 +318,7 @@
   // 截图功能
   elements.screenshotBtn.addEventListener('click', async function() {
     const btn = this;
-    const card = document.querySelector('.card');
+    const screenshotArea = document.querySelector('.screenshot-container');
     
     // 按钮状态改变
     btn.classList.add('capturing');
@@ -315,8 +331,8 @@
       // 等待一小会儿确保按钮完全隐藏
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // 截图卡片区域
-      const canvas = await html2canvas(card, {
+      // 截图整个区域（包含粉色背景）
+      const canvas = await html2canvas(screenshotArea, {
         backgroundColor: '#fff0f5',
         scale: 2, // 提高清晰度
         logging: false,
