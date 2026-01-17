@@ -15,6 +15,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative;
     }
     
     .card { 
@@ -198,9 +199,49 @@
         max-width: calc(100% - 200px);
       }
     }
+    
+    /* 截图按钮 */
+    .screenshot-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .screenshot-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .screenshot-btn:active {
+      transform: translateY(0);
+    }
+    
+    .screenshot-btn.capturing {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
+  <!-- 截图按钮 -->
+  <button class="screenshot-btn" id="screenshotBtn">
+    📸 截图保存
+  </button>
+  
   <div class="card">
     <div class="loading" id="loading">正在加载数据...</div>
     
@@ -242,6 +283,9 @@
     </div>
   </div>
 
+<!-- 引入 html2canvas 库用于截图 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
 (function() {
   const elements = {
@@ -251,8 +295,61 @@
     date: document.getElementById('date'),
     rate: document.getElementById('rate'),
     change: document.getElementById('change'),
-    foot: document.getElementById('foot')
+    foot: document.getElementById('foot'),
+    screenshotBtn: document.getElementById('screenshotBtn')
   };
+  
+  // 截图功能
+  elements.screenshotBtn.addEventListener('click', async function() {
+    const btn = this;
+    const card = document.querySelector('.card');
+    
+    // 按钮状态改变
+    btn.classList.add('capturing');
+    btn.textContent = '📸 截图中...';
+    
+    try {
+      // 隐藏截图按钮
+      btn.style.display = 'none';
+      
+      // 等待一小会儿确保按钮完全隐藏
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 截图卡片区域
+      const canvas = await html2canvas(card, {
+        backgroundColor: '#fff0f5',
+        scale: 2, // 提高清晰度
+        logging: false,
+        useCORS: true,
+        allowTaint: true
+      });
+      
+      // 转换为图片并下载
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const today = new Date().toISOString().split('T')[0];
+        link.download = `英镑汇率_${today}.png`;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        // 恢复按钮
+        btn.style.display = 'flex';
+        btn.classList.remove('capturing');
+        btn.textContent = '📸 截图保存';
+      });
+      
+    } catch (error) {
+      console.error('截图失败:', error);
+      alert('截图失败，请重试');
+      
+      // 恢复按钮
+      btn.style.display = 'flex';
+      btn.classList.remove('capturing');
+      btn.textContent = '📸 截图保存';
+    }
+  });
   
   function formatDateTime(isoString) {
     try {
