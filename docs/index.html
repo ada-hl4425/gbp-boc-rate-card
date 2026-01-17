@@ -320,7 +320,6 @@
   elements.screenshotBtn.addEventListener('click', async function() {
     const btn = this;
     const screenshotArea = document.querySelector('.screenshot-container');
-    const card = document.querySelector('.card');
     
     // 按钮状态改变
     btn.classList.add('capturing');
@@ -330,46 +329,42 @@
       // 隐藏截图按钮
       btn.style.display = 'none';
       
-      // 保存原始样式
-      const originalContainerStyle = screenshotArea.style.cssText;
-      const originalCardStyle = card.style.cssText;
+      // 等待确保按钮完全隐藏
+      await new Promise(resolve => setTimeout(resolve, 200));
       
-      // 强制设置为固定尺寸（桌面版布局）
-      screenshotArea.style.cssText = `
-        background: #fff0f5;
-        padding: 60px;
-        border-radius: 20px;
-        width: 1220px;
-        box-sizing: border-box;
-      `;
-      
-      card.style.cssText = `
-        width: 1100px;
-        aspect-ratio: 16/9;
-        background: #fff;
-        border: 3px solid #111;
-        border-radius: 24px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      `;
-      
-      // 等待样式应用
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // 截图整个区域（固定尺寸）
+      // 直接截图当前显示的内容
       const canvas = await html2canvas(screenshotArea, {
         backgroundColor: '#fff0f5',
-        scale: 2, // 提高清晰度
+        scale: 2,
         logging: false,
         useCORS: true,
-        allowTaint: true,
-        width: 1220,
-        height: Math.round(1100 / 16 * 9) + 120 // 卡片高度 + 上下padding
+        allowTaint: true
       });
       
+      // 创建固定尺寸的 canvas（2440x1476，适合所有平台）
+      const fixedCanvas = document.createElement('canvas');
+      fixedCanvas.width = 2440;
+      fixedCanvas.height = 1476;
+      
+      const ctx = fixedCanvas.getContext('2d');
+      
+      // 填充粉色背景
+      ctx.fillStyle = '#fff0f5';
+      ctx.fillRect(0, 0, 2440, 1476);
+      
+      // 计算缩放比例，保持宽高比
+      const scale = Math.min(2440 / canvas.width, 1476 / canvas.height);
+      const scaledWidth = canvas.width * scale;
+      const scaledHeight = canvas.height * scale;
+      
+      // 居中绘制
+      const x = (2440 - scaledWidth) / 2;
+      const y = (1476 - scaledHeight) / 2;
+      
+      ctx.drawImage(canvas, x, y, scaledWidth, scaledHeight);
+      
       // 转换为图片并下载
-      canvas.toBlob(function(blob) {
+      fixedCanvas.toBlob(function(blob) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         const today = new Date().toISOString().split('T')[0];
@@ -377,10 +372,6 @@
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
-        
-        // 恢复原始样式
-        screenshotArea.style.cssText = originalContainerStyle;
-        card.style.cssText = originalCardStyle;
         
         // 恢复按钮
         btn.style.display = 'flex';
@@ -392,9 +383,7 @@
       console.error('截图失败:', error);
       alert('截图失败，请重试');
       
-      // 恢复样式和按钮
-      screenshotArea.style.cssText = originalContainerStyle || '';
-      card.style.cssText = originalCardStyle || '';
+      // 恢复按钮
       btn.style.display = 'flex';
       btn.classList.remove('capturing');
       btn.textContent = '📸 截图保存';
