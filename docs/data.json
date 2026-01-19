@@ -4,11 +4,11 @@
   "boc_field": "现汇卖出价",
   "rate_cny_per_gbp": 9.3936,
   "rate_cny_per_100_gbp": 939.36,
-  "publish_time_raw": "2026/01/20 02:52:38",
-  "fetched_at_utc": "2026-01-19T20:21:35.633924+00:00",
-  "fetched_at_beijing": "2026-01-19 20:21:35",
+  "publish_time_raw": "2026/01/20 05:30:00",
+  "fetched_at_utc": "2026-01-19T22:19:13.666487+00:00",
+  "fetched_at_beijing": "2026-01-19 22:19:13",
   "source": "https://www.boc.cn/sourcedb/whpj/",
   "status": "success",
-  "rate_change": 0.0018,
-  "rate_change_percent": 0.02
+  "rate_change": 0.0,
+  "rate_change_percent": 0.0
 }
