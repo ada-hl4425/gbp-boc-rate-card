@@ -2,13 +2,13 @@
   "currency": "英镑",
   "pair": "GBP/CNY",
   "boc_field": "现汇卖出价",
-  "rate_cny_per_gbp": 9.515,
-  "rate_cny_per_100_gbp": 951.5,
-  "publish_time_raw": "2026/01/24 02:52:19",
-  "fetched_at_utc": "2026-01-23T20:22:57.576525+00:00",
-  "fetched_at_beijing": "2026-01-23 20:22:57",
+  "rate_cny_per_gbp": 9.5444,
+  "rate_cny_per_100_gbp": 954.44,
+  "publish_time_raw": "2026/01/24 06:15:46",
+  "fetched_at_utc": "2026-01-23T22:16:35.952203+00:00",
+  "fetched_at_beijing": "2026-01-23 22:16:35",
   "source": "https://www.boc.cn/sourcedb/whpj/",
   "status": "success",
-  "rate_change": 0.0008,
-  "rate_change_percent": 0.01
+  "rate_change": 0.0294,
+  "rate_change_percent": 0.31
 }
