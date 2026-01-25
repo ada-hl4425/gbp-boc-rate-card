@@ -72,13 +72,6 @@ BANKS = {
         "url": "https://ewealth.abchina.com/foreignexchange/listprice/",
         "color": "#007f4e",
         "needs_js": True
-    },
-    "HSBC": {
-        "name": "汇丰银行",
-        "short_name": "汇丰",
-        "url": "https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html",
-        "color": "#db0011",
-        "needs_js": False
     }
 }
 
