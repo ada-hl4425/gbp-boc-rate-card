@@ -81,11 +81,11 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
-      max-width: 500px;
+      max-width: 550px;
     }
 
     .list-title {
-      font-size: clamp(14px, 1.6vw, 18px);
+      font-size: clamp(13px, 1.5vw, 17px);
       font-weight: 700;
       color: #666;
       margin-bottom: clamp(8px, 1.2vw, 14px);
@@ -95,7 +95,7 @@
     .bank-list {
       display: flex;
       flex-direction: column;
-      gap: clamp(6px, 0.8vw, 10px);
+      gap: clamp(5px, 0.7vw, 8px);
       overflow-y: auto;
       flex: 1;
       min-height: 0;
@@ -104,10 +104,10 @@
     .bank-item {
       display: flex;
       align-items: center;
-      padding: clamp(10px, 1.2vw, 14px) clamp(14px, 1.6vw, 20px);
+      padding: clamp(8px, 1vw, 12px) clamp(12px, 1.4vw, 18px);
       background: #f8f8f8;
-      border-radius: 12px;
-      border-left: 5px solid #ccc;
+      border-radius: 10px;
+      border-left: 4px solid #ccc;
       transition: all 0.2s ease;
     }
 
@@ -120,31 +120,30 @@
     .bank-item.best {
       background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 100%);
       border: 2px solid #ff6b9d;
-      border-left: 5px solid #ff1493;
-      box-shadow: 0 4px 12px rgba(255, 20, 147, 0.15);
-      padding: clamp(12px, 1.4vw, 18px) clamp(14px, 1.6vw, 20px);
+      border-left: 4px solid #ff1493;
+      box-shadow: 0 3px 10px rgba(255, 20, 147, 0.15);
     }
 
     .bank-item.best .bank-name {
-      font-size: clamp(16px, 1.9vw, 22px);
+      font-weight: 800;
     }
 
     .bank-item.best .bank-rate {
-      font-size: clamp(22px, 2.8vw, 32px);
       color: #d6006f;
+      font-weight: 900;
     }
 
     .best-badge {
       display: none;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
+      width: clamp(24px, 3vw, 32px);
+      height: clamp(24px, 3vw, 32px);
       background: linear-gradient(135deg, #ff6b9d, #ff1493);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: clamp(10px, 1.1vw, 13px);
-      font-weight: 800;
+      border-radius: 50%;
+      font-size: clamp(12px, 1.4vw, 16px);
       margin-right: clamp(8px, 1vw, 12px);
+      flex-shrink: 0;
     }
 
     .bank-item.best .best-badge {
@@ -154,20 +153,27 @@
     .bank-name {
       font-size: clamp(14px, 1.6vw, 18px);
       font-weight: 700;
-      min-width: clamp(50px, 6vw, 70px);
+      min-width: clamp(45px, 5vw, 60px);
     }
 
     .bank-rate {
-      font-size: clamp(18px, 2.2vw, 26px);
+      font-size: clamp(16px, 2vw, 22px);
       font-weight: 800;
       margin-left: auto;
     }
 
-    .bank-change {
-      font-size: clamp(11px, 1.2vw, 14px);
+    .bank-unit {
+      font-size: clamp(12px, 1.3vw, 15px);
       font-weight: 600;
-      margin-left: clamp(10px, 1.2vw, 16px);
-      min-width: clamp(70px, 9vw, 100px);
+      color: #666;
+      margin-left: 4px;
+    }
+
+    .bank-change {
+      font-size: clamp(10px, 1.1vw, 13px);
+      font-weight: 600;
+      margin-left: clamp(8px, 1vw, 14px);
+      min-width: clamp(60px, 8vw, 90px);
       text-align: right;
     }
 
@@ -185,8 +191,8 @@
     }
 
     .illustration {
-      width: clamp(180px, 24vw, 280px);
-      height: clamp(180px, 24vw, 280px);
+      width: clamp(160px, 22vw, 260px);
+      height: clamp(160px, 22vw, 260px);
       border-radius: 16px;
       background: #ffffff;
       display: flex;
@@ -259,12 +265,12 @@
       }
 
       .illustration {
-        width: 90px;
-        height: 90px;
+        width: 80px;
+        height: 80px;
       }
 
       .foot {
-        max-width: calc(100% - 110px);
+        max-width: calc(100% - 100px);
       }
     }
 
@@ -291,7 +297,7 @@
     <div class="loading" id="loading">正在加载数据...</div>
 
     <div class="error hidden" id="error">
-      <div>❌ 数据加载失败</div>
+      <div>数据加载失败</div>
       <div style="font-size: 14px; color: #999;">请稍后刷新页面重试</div>
     </div>
 
@@ -299,12 +305,12 @@
       <div class="header">
         <h1 class="h1">今日英镑购汇价格</h1>
         <div class="sub">六大银行现汇卖出价对比（用人民币购买英镑）</div>
-        <div class="date" id="date">🇬🇧 日期：-- (UTC+0)</div>
+        <div class="date" id="date">日期：-- (UTC+0)</div>
       </div>
 
       <div class="main">
         <div class="list-section">
-          <div class="list-title">全部银行汇率（从低到高排列，低 = 更划算）</div>
+          <div class="list-title">全部银行汇率（低 = 更划算）</div>
           <div class="bank-list" id="bankList">
             <!-- 动态生成 -->
           </div>
@@ -320,7 +326,7 @@
       <div class="foot" id="foot">
         数据来源：各银行官网外汇牌价<br/>
         价格类型：现汇卖出价<br/>
-        🇬🇧 更新时间：-- (UTC+0)
+        更新时间：-- (UTC+0)
       </div>
     </div>
   </div>
@@ -357,7 +363,7 @@
         hour12: false,
         timeZone: 'Europe/London'
       });
-    } catch {
+    } catch (e) {
       return isoString;
     }
   }
@@ -376,52 +382,64 @@
   }
 
   function formatChange(change, percent) {
-    if (change === undefined || change === 0) return null;
+    if (change === undefined || change === null || change === 0) return null;
     const arrow = change > 0 ? '↑' : '↓';
     const sign = percent > 0 ? '+' : '';
     return {
-      text: `${arrow} ${Math.abs(change).toFixed(4)} (${sign}${percent.toFixed(2)}%)`,
+      text: arrow + ' ' + Math.abs(change).toFixed(4) + ' (' + sign + percent.toFixed(2) + '%)',
       className: change > 0 ? 'up' : 'down'
     };
   }
 
   function createBankItem(bank, isBest) {
     const item = document.createElement('div');
-    item.className = `bank-item bank-${bank.bank_code.toLowerCase()}${isBest ? ' best' : ''}`;
+    const bankClass = bank.bank_code ? bank.bank_code.toLowerCase() : '';
+    item.className = 'bank-item bank-' + bankClass + (isBest ? ' best' : '');
 
-    if (!isBest) {
+    if (!isBest && bank.bank_code) {
       item.style.borderLeftColor = bankColors[bank.bank_code] || '#ccc';
     }
 
     const changeInfo = formatChange(bank.rate_change, bank.rate_change_percent);
     const changeHtml = changeInfo
-      ? `<span class="bank-change ${changeInfo.className}">${changeInfo.text}</span>`
+      ? '<span class="bank-change ' + changeInfo.className + '">' + changeInfo.text + '</span>'
       : '<span class="bank-change neutral">--</span>';
 
-    const bestBadge = isBest ? '<span class="best-badge">👑 最优</span>' : '';
+    const bestBadge = isBest ? '<span class="best-badge">👍</span>' : '';
 
-    item.innerHTML = `
-      ${bestBadge}
-      <span class="bank-name">${bank.short_name}</span>
-      <span class="bank-rate">${bank.rate} CNY</span>
-      ${changeHtml}
-    `;
+    item.innerHTML = bestBadge +
+      '<span class="bank-name">' + (bank.short_name || bank.bank_name || '--') + '</span>' +
+      '<span class="bank-rate">' + (bank.rate || '--') + '<span class="bank-unit">CNY</span></span>' +
+      changeHtml;
 
     return item;
   }
 
   function updateUI(data) {
+    console.log('updateUI called with:', data);
+
     // 检查数据状态
-    if (data.status === 'error' || !data.banks || data.banks.length === 0) {
+    if (data.status === 'error') {
+      console.log('Status is error');
       showError();
       return;
     }
 
+    // 检查 banks 数组
+    var banks = data.banks;
+    if (!banks || !Array.isArray(banks) || banks.length === 0) {
+      console.log('No banks data, banks:', banks);
+      showError();
+      return;
+    }
+
+    console.log('Banks count:', banks.length);
+
     // 更新日期
-    let dateDisplay = '--';
+    var dateDisplay = '--';
     if (data.fetched_at_utc) {
       try {
-        const date = new Date(data.fetched_at_utc);
+        var date = new Date(data.fetched_at_utc);
         dateDisplay = date.toLocaleDateString('en-GB', {
           year: 'numeric',
           month: '2-digit',
@@ -429,46 +447,50 @@
           timeZone: 'Europe/London'
         });
       } catch (e) {
+        console.log('Date parse error:', e);
         dateDisplay = '--';
       }
     }
-    elements.date.textContent = `🇬🇧 日期: ${dateDisplay} (UTC+0)`;
+    elements.date.textContent = '日期: ' + dateDisplay + ' (UTC+0)';
 
     // 生成银行列表（第一个是最优）
     elements.bankList.innerHTML = '';
-    data.banks.forEach((bank, index) => {
-      const isBest = index === 0;
-      const item = createBankItem(bank, isBest);
+    for (var i = 0; i < banks.length; i++) {
+      var bank = banks[i];
+      var isBest = (i === 0);
+      var item = createBankItem(bank, isBest);
       elements.bankList.appendChild(item);
-    });
+      console.log('Added bank:', bank.short_name, bank.rate);
+    }
 
     // 更新页脚
-    const updateTime = formatDateTime(data.fetched_at_utc || '');
-    elements.foot.innerHTML = `
-      数据来源: 各银行官网外汇牌价<br/>
-      价格类型: ${data.rate_type || '现汇卖出价'}<br/>
-      🇬🇧 更新时间: ${updateTime} (UTC+0)
-    `;
+    var updateTime = formatDateTime(data.fetched_at_utc || '');
+    elements.foot.innerHTML =
+      '数据来源: 各银行官网外汇牌价<br/>' +
+      '价格类型: ' + (data.rate_type || '现汇卖出价') + '<br/>' +
+      '更新时间: ' + updateTime + ' (UTC+0)';
 
     showContent();
   }
 
   // 加载数据
+  console.log('Starting fetch...');
   fetch('./data.json', {
     cache: 'no-store',
     headers: { 'Cache-Control': 'no-cache' }
   })
-    .then(response => {
+    .then(function(response) {
+      console.log('Response status:', response.status);
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error('HTTP ' + response.status);
       }
       return response.json();
     })
-    .then(data => {
-      console.log('Loaded data:', data);
+    .then(function(data) {
+      console.log('Loaded data:', JSON.stringify(data, null, 2));
       updateUI(data);
     })
-    .catch(err => {
+    .catch(function(err) {
       console.error('Failed to load data:', err);
       showError();
     });
