@@ -26,7 +26,9 @@ except ImportError:
     print("ERROR: BeautifulSoup not installed. Run: pip install beautifulsoup4")
     sys.exit(1)
 
-VALID_RATE_RANGE = (5.0, 15.0)  # 合理汇率范围 CNY per GBP
+# 英镑汇率合理范围 (排除美元约6.9的干扰)
+# 历史上 GBP/CNY 在 8-13 之间波动
+VALID_RATE_RANGE = (8.0, 13.0)
 
 # 银行配置
 BANKS = {
@@ -116,15 +118,16 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
         print(f"    Found GBP row: {cell_texts[:6]}")
 
         # 尝试从单元格中提取汇率
+        # 英镑汇率约 9.4-9.6，排除美元约 6.9
         rates_found = []
         for text in cell_texts:
             try:
                 val = float(text)
-                # 100外币 = xxx人民币 格式
-                if 500 < val < 1500:
+                # 100外币 = xxx人民币 格式 (英镑约 940-960)
+                if 800 < val < 1300:
                     rates_found.append(val / 100.0)
-                # 直接汇率格式
-                elif 5 < val < 15:
+                # 直接汇率格式 (英镑约 8-13)
+                elif 8.0 < val < 13.0:
                     rates_found.append(val)
             except ValueError:
                 continue
