@@ -154,28 +154,14 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 continue
 
         if rates_found:
-            print(f"    Rates found (first 6): {rates_found[:6]}")
-            # 选择卖出价：
-            # 英镑汇率约 9.x，美元约 6.x-7.x
-            # 找到第一个看起来像英镑的汇率对（买入、卖出都在8-13范围）
-            gbp_rates = []
-            for r in rates_found:
-                if 8.0 <= r <= 13.0:
-                    gbp_rates.append(r)
-                    if len(gbp_rates) >= 2:
-                        break  # 找到买入和卖出就够了
-
-            if len(gbp_rates) >= 2:
-                # 取第2个作为卖出价
-                rate = gbp_rates[1]
-                print(f"    GBP rates: buy={gbp_rates[0]}, sell={gbp_rates[1]}")
-            elif len(gbp_rates) == 1:
-                rate = gbp_rates[0]
-            elif rates_found:
-                # 回退：如果没找到8-13范围的，取前两个值
-                rate = rates_found[1] if len(rates_found) >= 2 else rates_found[0]
+            print(f"    Rates found (first 4): {rates_found[:4]}")
+            # 已确认是英镑行，直接取第二个值作为卖出价
+            # 格式通常是：买入价, 卖出价, ...
+            if len(rates_found) >= 2:
+                rate = rates_found[1]  # 卖出价
+                print(f"    Selected: buy={rates_found[0]}, sell={rates_found[1]}")
             else:
-                continue
+                rate = rates_found[0]
 
             if validate_rate(rate, bank_code):
                 # 尝试提取发布时间
