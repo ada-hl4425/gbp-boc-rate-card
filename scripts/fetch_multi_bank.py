@@ -117,29 +117,25 @@ def is_gbp_currency_cell(text: str) -> bool:
 
 
 def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
-    """从HTML中提取英镑汇率 - 改进版：先确认币种再提取数值"""
+    """从HTML中提取英镑汇率 - 简化版：找到英镑行，取较高值作为卖出价"""
     soup = BeautifulSoup(html, 'html.parser')
 
-    # 查找所有表格行
+    # 方法1：查找表格行
     for row in soup.find_all('tr'):
         cells = row.find_all('td')
         if not cells:
             continue
 
         cell_texts = [c.get_text(strip=True).replace(',', '') for c in cells]
+        row_text = ' '.join(cell_texts)
 
-        # 关键改进：检查第一个单元格是否是英镑币种
-        # 这样可以确保整行都是英镑数据
-        first_cell = cell_texts[0] if cell_texts else ""
-        if not is_gbp_currency_cell(first_cell):
-            # 也检查第二个单元格（有些表格第一列是序号）
-            second_cell = cell_texts[1] if len(cell_texts) > 1 else ""
-            if not is_gbp_currency_cell(second_cell):
-                continue
+        # 检查是否包含英镑
+        if '英镑' not in row_text and 'GBP' not in row_text:
+            continue
 
         print(f"    Found GBP row: {cell_texts[:6]}")
 
-        # 确认是英镑行后，提取所有数值
+        # 提取所有数值
         rates_found = []
         for text in cell_texts:
             try:
@@ -154,14 +150,10 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 continue
 
         if rates_found:
-            print(f"    Rates found (first 4): {rates_found[:4]}")
-            # 已确认是英镑行，直接取第二个值作为卖出价
-            # 格式通常是：买入价, 卖出价, ...
-            if len(rates_found) >= 2:
-                rate = rates_found[1]  # 卖出价
-                print(f"    Selected: buy={rates_found[0]}, sell={rates_found[1]}")
-            else:
-                rate = rates_found[0]
+            print(f"    Rates found: {rates_found}")
+            # 取最高值作为卖出价（卖出价总是 >= 买入价）
+            rate = max(rates_found)
+            print(f"    Selected (max): {rate}")
 
             if validate_rate(rate, bank_code):
                 # 尝试提取发布时间
@@ -171,6 +163,27 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                         publish_time = text
                         break
                 return rate, publish_time
+
+    # 方法2：如果表格方法失败，尝试搜索整个页面
+    # 找到"英镑"附近的数字
+    gbp_match = re.search(r'英镑[^0-9]*(\d{1,4}\.?\d*)[^0-9]*(\d{1,4}\.?\d*)?', html)
+    if gbp_match:
+        rates = []
+        for g in gbp_match.groups():
+            if g:
+                try:
+                    val = float(g)
+                    if 100 < val < 2000:
+                        rates.append(val / 100.0)
+                    elif 1 < val < 20:
+                        rates.append(val)
+                except ValueError:
+                    pass
+        if rates:
+            rate = max(rates)
+            print(f"    Found via regex: {rate}")
+            if validate_rate(rate, bank_code):
+                return rate, ""
 
     return None
 
