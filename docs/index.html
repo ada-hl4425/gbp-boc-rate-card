@@ -70,111 +70,32 @@
       align-items: stretch;
       justify-content: space-between;
       flex: 1;
-      margin-top: clamp(10px, 1.5vw, 20px);
-      gap: clamp(15px, 2vw, 30px);
+      margin-top: clamp(12px, 2vw, 24px);
+      gap: clamp(20px, 3vw, 40px);
       min-height: 0;
     }
 
-    /* 左侧：最优汇率 */
-    .best-section {
-      flex: 1.2;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .best-label {
-      font-size: clamp(14px, 1.8vw, 20px);
-      font-weight: 700;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .best-bank {
-      display: flex;
-      align-items: center;
-      gap: clamp(8px, 1vw, 12px);
-      margin-bottom: clamp(6px, 1vw, 12px);
-    }
-
-    .best-bank-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: clamp(12px, 1.4vw, 16px);
-      font-weight: 800;
-      color: white;
-      background: #e60012;
-    }
-
-    .crown {
-      font-size: clamp(18px, 2.2vw, 26px);
-    }
-
-    .best-rate {
-      font-size: clamp(36px, 5.5vw, 64px);
-      font-weight: 950;
-      line-height: 1.1;
-      color: #111;
-      display: flex;
-      align-items: baseline;
-      gap: clamp(6px, 1vw, 12px);
-      flex-wrap: wrap;
-    }
-
-    .best-rate .currency {
-      font-size: clamp(20px, 2.8vw, 32px);
-      font-weight: 900;
-    }
-
-    .best-rate .equals {
-      font-size: clamp(24px, 3.5vw, 42px);
-      font-weight: 900;
-    }
-
-    .best-rate .value {
-      font-size: clamp(36px, 5.5vw, 64px);
-      font-weight: 950;
-    }
-
-    .best-rate .unit {
-      font-size: clamp(18px, 2.2vw, 26px);
-      font-weight: 900;
-      color: #333;
-    }
-
-    .best-change {
-      margin-top: 6px;
-      font-size: clamp(13px, 1.5vw, 17px);
-      font-weight: 700;
-    }
-
-    .best-change.up { color: #d32f2f; }
-    .best-change.down { color: #388e3c; }
-    .best-change.neutral { color: #666; }
-
-    /* 右侧：其他银行列表 */
-    .other-section {
+    /* 左侧：银行列表 */
+    .list-section {
       flex: 1;
       display: flex;
       flex-direction: column;
       min-width: 0;
+      max-width: 500px;
     }
 
-    .other-title {
-      font-size: clamp(13px, 1.5vw, 17px);
+    .list-title {
+      font-size: clamp(14px, 1.6vw, 18px);
       font-weight: 700;
       color: #666;
-      margin-bottom: clamp(6px, 1vw, 10px);
+      margin-bottom: clamp(8px, 1.2vw, 14px);
       flex-shrink: 0;
     }
 
     .bank-list {
       display: flex;
       flex-direction: column;
-      gap: clamp(4px, 0.6vw, 8px);
+      gap: clamp(6px, 0.8vw, 10px);
       overflow-y: auto;
       flex: 1;
       min-height: 0;
@@ -183,31 +104,61 @@
     .bank-item {
       display: flex;
       align-items: center;
-      padding: clamp(6px, 0.8vw, 10px) clamp(10px, 1.2vw, 14px);
+      padding: clamp(10px, 1.2vw, 14px) clamp(14px, 1.6vw, 20px);
       background: #f8f8f8;
-      border-radius: 10px;
-      border-left: 4px solid #ccc;
+      border-radius: 12px;
+      border-left: 5px solid #ccc;
       transition: all 0.2s ease;
     }
 
     .bank-item:hover {
       background: #f0f0f0;
-      transform: translateX(2px);
+      transform: translateX(3px);
     }
 
+    /* 最优银行高亮样式 */
     .bank-item.best {
-      background: linear-gradient(135deg, #fff5f5 0%, #ffe8ec 100%);
-      border-left-color: #e60012;
+      background: linear-gradient(135deg, #fff0f5 0%, #ffe4ec 100%);
+      border: 2px solid #ff6b9d;
+      border-left: 5px solid #ff1493;
+      box-shadow: 0 4px 12px rgba(255, 20, 147, 0.15);
+      padding: clamp(12px, 1.4vw, 18px) clamp(14px, 1.6vw, 20px);
+    }
+
+    .bank-item.best .bank-name {
+      font-size: clamp(16px, 1.9vw, 22px);
+    }
+
+    .bank-item.best .bank-rate {
+      font-size: clamp(22px, 2.8vw, 32px);
+      color: #d6006f;
+    }
+
+    .best-badge {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #ff6b9d, #ff1493);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: clamp(10px, 1.1vw, 13px);
+      font-weight: 800;
+      margin-right: clamp(8px, 1vw, 12px);
+    }
+
+    .bank-item.best .best-badge {
+      display: flex;
     }
 
     .bank-name {
-      font-size: clamp(13px, 1.5vw, 17px);
+      font-size: clamp(14px, 1.6vw, 18px);
       font-weight: 700;
       min-width: clamp(50px, 6vw, 70px);
     }
 
     .bank-rate {
-      font-size: clamp(15px, 1.8vw, 21px);
+      font-size: clamp(18px, 2.2vw, 26px);
       font-weight: 800;
       margin-left: auto;
     }
@@ -215,8 +166,8 @@
     .bank-change {
       font-size: clamp(11px, 1.2vw, 14px);
       font-weight: 600;
-      margin-left: clamp(6px, 0.8vw, 10px);
-      min-width: clamp(50px, 6vw, 70px);
+      margin-left: clamp(10px, 1.2vw, 16px);
+      min-width: clamp(70px, 9vw, 100px);
       text-align: right;
     }
 
@@ -224,27 +175,30 @@
     .bank-change.down { color: #388e3c; }
     .bank-change.neutral { color: #999; }
 
-    /* Hello Kitty 装饰 */
+    /* 右侧：Hello Kitty */
+    .kitty-section {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
     .illustration {
-      width: clamp(100px, 14vw, 160px);
-      height: clamp(100px, 14vw, 160px);
-      border-radius: 12px;
+      width: clamp(180px, 24vw, 280px);
+      height: clamp(180px, 24vw, 280px);
+      border-radius: 16px;
       background: #ffffff;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      position: absolute;
-      right: clamp(15px, 2vw, 30px);
-      bottom: clamp(40px, 5vw, 60px);
-      z-index: 1;
     }
 
     .illustration img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 12px;
+      border-radius: 16px;
     }
 
     /* 页脚 */
@@ -290,26 +244,27 @@
 
       .main {
         flex-direction: column;
-        gap: 16px;
+        gap: 20px;
       }
 
-      .best-section {
-        flex: none;
-      }
-
-      .other-section {
+      .list-section {
+        max-width: none;
         flex: 1;
       }
 
-      .illustration {
-        width: 80px;
-        height: 80px;
+      .kitty-section {
+        position: absolute;
         right: 10px;
-        bottom: 35px;
+        bottom: 40px;
+      }
+
+      .illustration {
+        width: 90px;
+        height: 90px;
       }
 
       .foot {
-        max-width: calc(100% - 100px);
+        max-width: calc(100% - 110px);
       }
     }
 
@@ -320,6 +275,15 @@
     .bank-cmb { border-left-color: #c41230; }
     .bank-bocom { border-left-color: #004a8f; }
     .bank-abc { border-left-color: #007f4e; }
+
+    .bank-item.best.bank-boc,
+    .bank-item.best.bank-icbc,
+    .bank-item.best.bank-ccb,
+    .bank-item.best.bank-cmb,
+    .bank-item.best.bank-bocom,
+    .bank-item.best.bank-abc {
+      border-left-color: #ff1493;
+    }
   </style>
 </head>
 <body>
@@ -339,31 +303,18 @@
       </div>
 
       <div class="main">
-        <div class="best-section">
-          <div class="best-label">最优购汇价</div>
-          <div class="best-bank">
-            <span class="crown">👑</span>
-            <span class="best-bank-badge" id="bestBankName">--</span>
-          </div>
-          <div class="best-rate">
-            <span class="currency">1 GBP</span>
-            <span class="equals">=</span>
-            <span class="value" id="bestRate">--</span>
-            <span class="unit">CNY</span>
-          </div>
-          <div class="best-change hidden" id="bestChange">较上次: --</div>
-        </div>
-
-        <div class="other-section">
-          <div class="other-title">全部银行汇率 (低→高)</div>
+        <div class="list-section">
+          <div class="list-title">全部银行汇率（从低到高排列，低 = 更划算）</div>
           <div class="bank-list" id="bankList">
             <!-- 动态生成 -->
           </div>
         </div>
-      </div>
 
-      <div class="illustration">
-        <img src="hello-kitty.png" alt="Hello Kitty">
+        <div class="kitty-section">
+          <div class="illustration">
+            <img src="hello-kitty.png" alt="Hello Kitty">
+          </div>
+        </div>
       </div>
 
       <div class="foot" id="foot">
@@ -381,9 +332,6 @@
     error: document.getElementById('error'),
     content: document.getElementById('content'),
     date: document.getElementById('date'),
-    bestBankName: document.getElementById('bestBankName'),
-    bestRate: document.getElementById('bestRate'),
-    bestChange: document.getElementById('bestChange'),
     bankList: document.getElementById('bankList'),
     foot: document.getElementById('foot')
   };
@@ -440,16 +388,22 @@
   function createBankItem(bank, isBest) {
     const item = document.createElement('div');
     item.className = `bank-item bank-${bank.bank_code.toLowerCase()}${isBest ? ' best' : ''}`;
-    item.style.borderLeftColor = bankColors[bank.bank_code] || '#ccc';
+
+    if (!isBest) {
+      item.style.borderLeftColor = bankColors[bank.bank_code] || '#ccc';
+    }
 
     const changeInfo = formatChange(bank.rate_change, bank.rate_change_percent);
     const changeHtml = changeInfo
       ? `<span class="bank-change ${changeInfo.className}">${changeInfo.text}</span>`
       : '<span class="bank-change neutral">--</span>';
 
+    const bestBadge = isBest ? '<span class="best-badge">👑 最优</span>' : '';
+
     item.innerHTML = `
+      ${bestBadge}
       <span class="bank-name">${bank.short_name}</span>
-      <span class="bank-rate">${bank.rate}</span>
+      <span class="bank-rate">${bank.rate} CNY</span>
       ${changeHtml}
     `;
 
@@ -480,23 +434,7 @@
     }
     elements.date.textContent = `🇬🇧 日期: ${dateDisplay} (UTC+0)`;
 
-    // 找到最优银行
-    const bestBank = data.banks[0]; // 已按汇率排序，第一个最优
-
-    // 更新最优银行信息
-    elements.bestBankName.textContent = bestBank.short_name;
-    elements.bestBankName.style.background = bankColors[bestBank.bank_code] || '#e60012';
-    elements.bestRate.textContent = bestBank.rate;
-
-    // 更新最优银行变化
-    const bestChangeInfo = formatChange(bestBank.rate_change, bestBank.rate_change_percent);
-    if (bestChangeInfo) {
-      elements.bestChange.textContent = `较上次: ${bestChangeInfo.text}`;
-      elements.bestChange.className = `best-change ${bestChangeInfo.className}`;
-      elements.bestChange.classList.remove('hidden');
-    }
-
-    // 生成银行列表
+    // 生成银行列表（第一个是最优）
     elements.bankList.innerHTML = '';
     data.banks.forEach((bank, index) => {
       const isBest = index === 0;
