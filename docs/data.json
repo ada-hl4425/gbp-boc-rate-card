@@ -2,20 +2,9 @@
   "currency": "英镑",
   "pair": "GBP/CNY",
   "rate_type": "现汇卖出价",
-  "best_bank": "HSBC",
-  "best_rate": 6.0,
+  "best_bank": "CCB",
+  "best_rate": 9.4746,
   "banks": [
-    {
-      "bank_code": "HSBC",
-      "bank_name": "汇丰银行",
-      "short_name": "汇丰",
-      "rate": 6.0,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html",
-      "color": "#db0011",
-      "status": "success"
-    },
     {
       "bank_code": "CCB",
       "bank_name": "中国建设银行",
@@ -82,8 +71,8 @@
       "rate_change_percent": 0.0
     }
   ],
-  "bank_count": 6,
-  "fetched_at_utc": "2026-01-25T15:11:11.900128+00:00",
-  "fetched_at_beijing": "2026-01-25 15:11:11",
+  "bank_count": 5,
+  "fetched_at_utc": "2026-01-25T15:16:03.787060+00:00",
+  "fetched_at_beijing": "2026-01-25 15:16:03",
   "status": "success"
 }
