@@ -165,23 +165,10 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 return rate, publish_time
 
     # 方法2：如果表格方法失败，尝试用正则搜索整个页面
-    # 注意：HSBC等网站HTML标签很多，需要灵活匹配
+    # 简单粗暴：找到"英镑"或"GBP"，然后提取附近所有数字
     patterns = [
-        r'GBP\).*?(\d\.\d{4,})',            # HSBC格式: GBP)...9.6157267
-        r'英镑.*?(\d\.\d{4,})',             # 通用：英镑...9.xxxx
-        r'GBP\)</td><td[^>]*>(\d+\.\d+)',   # HSBC表格格式
-        r'英镑.*?</td>.*?<td[^>]*>(\d+\.\d+)',  # 通用表格格式
-        r'英镑[^0-9]{0,200}(\d+\.\d{2,})',  # 英镑后面的小数
-        r'GBP[^0-9]{0,200}(\d+\.\d{2,})',   # GBP后面的小数
-        r'(\d{3}\.\d+)[^0-9]{0,50}英镑',    # 英镑前面的数字
+        r'(?:英镑|GBP)[^0-9]*(\d+\.?\d*)',  # 英镑/GBP后面的第一个数字
     ]
-
-    # 调试：对于HSBC，打印GBP附近的内容
-    if bank_code == "HSBC":
-        gbp_pos = html.find("GBP")
-        if gbp_pos >= 0:
-            snippet = html[gbp_pos:gbp_pos+200].replace('\n', ' ')
-            print(f"    [DEBUG] GBP context: {snippet[:150]}")
 
     for pattern in patterns:
         matches = re.findall(pattern, html, re.IGNORECASE | re.DOTALL)
@@ -190,15 +177,17 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
             for m in matches:
                 try:
                     val = float(m)
-                    if 800 < val < 1300:  # 100外币格式，英镑约 900-1000
+                    # 100外币格式（如 954.44）
+                    if 100 < val < 2000:
                         rates.append(val / 100.0)
-                    elif 8 < val < 13:  # 直接格式，英镑约 9-10
+                    # 直接汇率格式（如 9.54）
+                    elif 5 < val < 20:
                         rates.append(val)
                 except ValueError:
                     pass
             if rates:
-                rate = max(rates)
-                print(f"    Found via regex ({pattern[:20]}...): {rate}")
+                rate = max(rates)  # 取最高值作为卖出价
+                print(f"    Found via regex: {rate} (from {len(matches)} matches)")
                 if validate_rate(rate, bank_code):
                     return rate, ""
 
