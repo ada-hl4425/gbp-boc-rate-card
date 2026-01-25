@@ -2,34 +2,47 @@
   "currency": "英镑",
   "pair": "GBP/CNY",
   "rate_type": "现汇卖出价",
-  "best_bank": "ICBC",
-  "best_rate": 6.9494,
+  "best_bank": "BOC",
+  "best_rate": 9.474,
   "banks": [
+    {
+      "bank_code": "BOC",
+      "bank_name": "中国银行",
+      "short_name": "中行",
+      "rate": 9.474,
+      "rate_type": "现汇卖出价",
+      "publish_time": "2026/01/25 10:30:00",
+      "source_url": "https://www.boc.cn/sourcedb/whpj/",
+      "color": "#e60012",
+      "status": "success",
+      "rate_change": -0.0704,
+      "rate_change_percent": -0.74
+    },
     {
       "bank_code": "ICBC",
       "bank_name": "中国工商银行",
       "short_name": "工行",
-      "rate": 6.9494,
+      "rate": 9.5298,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://www.icbc.com.cn/column/1438058341489590354.html",
       "color": "#c4161c",
       "status": "success",
-      "rate_change": -1.9258,
-      "rate_change_percent": -21.7
+      "rate_change": 2.5804,
+      "rate_change_percent": 37.13
     },
     {
       "bank_code": "CMB",
       "bank_name": "招商银行",
       "short_name": "招行",
-      "rate": 9.4572,
+      "rate": 9.5332,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://fx.cmbchina.com/hq/",
       "color": "#c41230",
       "status": "success",
-      "rate_change": 0.0,
-      "rate_change_percent": 0.0
+      "rate_change": 0.076,
+      "rate_change_percent": 0.8
     },
     {
       "bank_code": "ABC",
@@ -41,25 +54,12 @@
       "source_url": "https://ewealth.abchina.com/foreignexchange/listprice/",
       "color": "#007f4e",
       "status": "success",
-      "rate_change": 0.0666,
-      "rate_change_percent": 0.7
-    },
-    {
-      "bank_code": "BOC",
-      "bank_name": "中国银行",
-      "short_name": "中行",
-      "rate": 9.5444,
-      "rate_type": "现汇卖出价",
-      "publish_time": "2026/01/25 10:30:00",
-      "source_url": "https://www.boc.cn/sourcedb/whpj/",
-      "color": "#e60012",
-      "status": "success",
       "rate_change": 0.0,
       "rate_change_percent": 0.0
     }
   ],
   "bank_count": 4,
-  "fetched_at_utc": "2026-01-25T14:27:30.741902+00:00",
-  "fetched_at_beijing": "2026-01-25 14:27:30",
+  "fetched_at_utc": "2026-01-25T14:32:38.381958+00:00",
+  "fetched_at_beijing": "2026-01-25 14:32:38",
   "status": "success"
 }
