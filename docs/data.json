@@ -15,8 +15,8 @@
       "source_url": "https://www2.ccb.com/chn/forex/exchange-quotations.shtml",
       "color": "#004098",
       "status": "success",
-      "rate_change": -0.0666,
-      "rate_change_percent": -0.7
+      "rate_change": 0.0,
+      "rate_change_percent": 0.0
     },
     {
       "bank_code": "ICBC",
@@ -72,7 +72,7 @@
     }
   ],
   "bank_count": 5,
-  "fetched_at_utc": "2026-01-25T14:53:55.729057+00:00",
-  "fetched_at_beijing": "2026-01-25 14:53:55",
+  "fetched_at_utc": "2026-01-25T15:01:34.347623+00:00",
+  "fetched_at_beijing": "2026-01-25 15:01:34",
   "status": "success"
 }
