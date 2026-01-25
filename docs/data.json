@@ -54,8 +54,8 @@
       "source_url": "https://fx.cmbchina.com/hq/",
       "color": "#c41230",
       "status": "success",
-      "rate_change": 0.0105,
-      "rate_change_percent": 0.11
+      "rate_change": 0.0,
+      "rate_change_percent": 0.0
     },
     {
       "bank_code": "BOC",
@@ -72,7 +72,7 @@
     }
   ],
   "bank_count": 5,
-  "fetched_at_utc": "2026-01-25T16:23:59.717523+00:00",
-  "fetched_at_beijing": "2026-01-25 16:23:59",
+  "fetched_at_utc": "2026-01-25T18:28:19.045917+00:00",
+  "fetched_at_beijing": "2026-01-25 18:28:19",
   "status": "success"
 }
