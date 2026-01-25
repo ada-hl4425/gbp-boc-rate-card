@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>今日英镑购汇价格（中行现汇卖出价）</title>
+  <title>今日英镑购汇价格 - 多银行对比</title>
   <style>
     * { box-sizing: border-box; }
-    body { 
-      margin: 0; 
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; 
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
       background: #fff0f5;
       min-height: 100vh;
       display: flex;
@@ -16,157 +16,253 @@
       justify-content: center;
       padding: 20px;
     }
-    
-    .card { 
-      width: min(1100px, 100%); 
-      aspect-ratio: 16/9; 
+
+    .card {
+      width: min(1100px, 100%);
+      aspect-ratio: 16/9;
       background: #fff;
-      border: 3px solid #111; 
-      border-radius: 24px; 
-      position: relative; 
+      border: 3px solid #111;
+      border-radius: 24px;
+      position: relative;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.1);
     }
-    
-    .content { 
-      position: absolute; 
-      inset: 0; 
-      padding: clamp(30px, 5vw, 56px) clamp(40px, 6vw, 64px);
+
+    .content {
+      position: absolute;
+      inset: 0;
+      padding: clamp(20px, 3vw, 36px) clamp(30px, 4vw, 48px);
       display: flex;
       flex-direction: column;
     }
-    
+
     /* 标题区 */
     .header {
       text-align: center;
+      flex-shrink: 0;
     }
-    
-    .h1 { 
-      font-size: clamp(32px, 4.7vw, 52px); 
-      font-weight: 900; 
-      letter-spacing: 2px; 
+
+    .h1 {
+      font-size: clamp(24px, 3.5vw, 40px);
+      font-weight: 900;
+      letter-spacing: 2px;
       margin: 0;
       color: #111;
     }
-    
-    .sub { 
-      margin-top: 8px; 
-      font-size: clamp(14px, 1.6vw, 18px); 
-      color: #555; 
-      font-weight: 600; 
+
+    .sub {
+      margin-top: 4px;
+      font-size: clamp(12px, 1.4vw, 16px);
+      color: #555;
+      font-weight: 600;
     }
-    
-    .date { 
-      margin-top: 6px; 
-      font-size: clamp(16px, 2vw, 22px); 
+
+    .date {
+      margin-top: 4px;
+      font-size: clamp(13px, 1.6vw, 18px);
       font-weight: 700;
       color: #333;
     }
-    
+
     /* 主内容区 */
-    .main { 
-      display: flex; 
-      align-items: center; 
-      justify-content: flex-start;
-      margin-top: auto;
-      margin-bottom: auto;
-      gap: clamp(20px, 4vw, 40px);
-      position: relative;
-    }
-    
-    .left { 
+    .main {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
       flex: 1;
-      min-width: 0;
+      margin-top: clamp(10px, 1.5vw, 20px);
+      gap: clamp(15px, 2vw, 30px);
+      min-height: 0;
     }
-    
-    .label { 
-      font-size: clamp(24px, 3vw, 34px); 
-      font-weight: 900; 
-      margin-bottom: clamp(12px, 1.6vw, 18px);
-      color: #111;
+
+    /* 左侧：最优汇率 */
+    .best-section {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
-    
-    .rate { 
-      font-size: clamp(48px, 7.6vw, 84px); 
-      font-weight: 950; 
+
+    .best-label {
+      font-size: clamp(14px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .best-bank {
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1vw, 12px);
+      margin-bottom: clamp(6px, 1vw, 12px);
+    }
+
+    .best-bank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 800;
+      color: white;
+      background: #e60012;
+    }
+
+    .crown {
+      font-size: clamp(18px, 2.2vw, 26px);
+    }
+
+    .best-rate {
+      font-size: clamp(36px, 5.5vw, 64px);
+      font-weight: 950;
       line-height: 1.1;
       color: #111;
       display: flex;
       align-items: baseline;
-      gap: clamp(8px, 1.5vw, 16px);
+      gap: clamp(6px, 1vw, 12px);
       flex-wrap: wrap;
     }
-    
-    .rate .currency {
-      font-size: clamp(28px, 4vw, 48px);
+
+    .best-rate .currency {
+      font-size: clamp(20px, 2.8vw, 32px);
       font-weight: 900;
     }
-    
-    .rate .equals {
-      font-size: clamp(32px, 5vw, 56px);
+
+    .best-rate .equals {
+      font-size: clamp(24px, 3.5vw, 42px);
       font-weight: 900;
     }
-    
-    .rate .value {
-      font-size: clamp(48px, 7.6vw, 84px);
+
+    .best-rate .value {
+      font-size: clamp(36px, 5.5vw, 64px);
       font-weight: 950;
     }
-    
-    .rate .unit {
-      font-size: clamp(24px, 3vw, 34px);
+
+    .best-rate .unit {
+      font-size: clamp(18px, 2.2vw, 26px);
       font-weight: 900;
       color: #333;
     }
-    
-    /* 变化指示器 */
-    .change {
-      margin-top: 12px;
-      font-size: clamp(16px, 1.8vw, 20px);
+
+    .best-change {
+      margin-top: 6px;
+      font-size: clamp(13px, 1.5vw, 17px);
       font-weight: 700;
     }
-    
-    .change.up { color: #d32f2f; }
-    .change.down { color: #388e3c; }
-    .change.neutral { color: #666; }
-    
-    /* 右侧装饰 - 独立元素，不受 flex 容器限制 */
-    .illustration { 
-      width: clamp(220px, 28vw, 320px); 
-      height: clamp(220px, 28vw, 320px); 
-      border-radius: 16px; 
+
+    .best-change.up { color: #d32f2f; }
+    .best-change.down { color: #388e3c; }
+    .best-change.neutral { color: #666; }
+
+    /* 右侧：其他银行列表 */
+    .other-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .other-title {
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 700;
+      color: #666;
+      margin-bottom: clamp(6px, 1vw, 10px);
+      flex-shrink: 0;
+    }
+
+    .bank-list {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4px, 0.6vw, 8px);
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .bank-item {
+      display: flex;
+      align-items: center;
+      padding: clamp(6px, 0.8vw, 10px) clamp(10px, 1.2vw, 14px);
+      background: #f8f8f8;
+      border-radius: 10px;
+      border-left: 4px solid #ccc;
+      transition: all 0.2s ease;
+    }
+
+    .bank-item:hover {
+      background: #f0f0f0;
+      transform: translateX(2px);
+    }
+
+    .bank-item.best {
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe8ec 100%);
+      border-left-color: #e60012;
+    }
+
+    .bank-name {
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: 700;
+      min-width: clamp(50px, 6vw, 70px);
+    }
+
+    .bank-rate {
+      font-size: clamp(15px, 1.8vw, 21px);
+      font-weight: 800;
+      margin-left: auto;
+    }
+
+    .bank-change {
+      font-size: clamp(11px, 1.2vw, 14px);
+      font-weight: 600;
+      margin-left: clamp(6px, 0.8vw, 10px);
+      min-width: clamp(50px, 6vw, 70px);
+      text-align: right;
+    }
+
+    .bank-change.up { color: #d32f2f; }
+    .bank-change.down { color: #388e3c; }
+    .bank-change.neutral { color: #999; }
+
+    /* Hello Kitty 装饰 */
+    .illustration {
+      width: clamp(100px, 14vw, 160px);
+      height: clamp(100px, 14vw, 160px);
+      border-radius: 12px;
       background: #ffffff;
-      display: flex; 
+      display: flex;
       align-items: flex-end;
-      justify-content: center; 
+      justify-content: center;
       flex-shrink: 0;
       position: absolute;
-      right: clamp(20px, 2.5vw, 40px);
-      bottom: clamp(55px, 7vw, 80px);
+      right: clamp(15px, 2vw, 30px);
+      bottom: clamp(40px, 5vw, 60px);
       z-index: 1;
     }
-    
+
     .illustration img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 16px;
+      border-radius: 12px;
     }
-    
+
     /* 页脚 */
-    .foot { 
-      position: absolute; 
-      right: clamp(20px, 2.5vw, 28px); 
-      bottom: clamp(16px, 2vw, 22px); 
-      font-size: clamp(11px, 1.2vw, 14px); 
-      color: #666; 
-      font-weight: 600; 
+    .foot {
+      position: absolute;
+      right: clamp(15px, 2vw, 24px);
+      bottom: clamp(10px, 1.5vw, 16px);
+      font-size: clamp(10px, 1.1vw, 13px);
+      color: #666;
+      font-weight: 600;
       text-align: right;
-      line-height: 1.5;
+      line-height: 1.4;
       z-index: 10;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2px 0;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2px 4px;
+      border-radius: 4px;
     }
-    
+
     /* 加载和错误状态 */
     .loading, .error {
       position: absolute;
@@ -179,63 +275,99 @@
       font-size: 20px;
       font-weight: 600;
     }
-    
+
     .loading { color: #666; }
     .error { color: #d32f2f; flex-direction: column; gap: 12px; }
-    
+
     .hidden { display: none !important; }
-    
+
     /* 响应式调整 */
     @media (max-width: 768px) {
-      .main { flex-direction: column; gap: 24px; }
-      .illustration { 
-        width: 180px; 
-        height: 180px;
-        right: 15px;
-        bottom: 55px;
+      .card {
+        aspect-ratio: auto;
+        min-height: 90vh;
       }
+
+      .main {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .best-section {
+        flex: none;
+      }
+
+      .other-section {
+        flex: 1;
+      }
+
+      .illustration {
+        width: 80px;
+        height: 80px;
+        right: 10px;
+        bottom: 35px;
+      }
+
       .foot {
-        max-width: calc(100% - 200px);
+        max-width: calc(100% - 100px);
       }
     }
+
+    /* 银行颜色 */
+    .bank-boc { border-left-color: #e60012; }
+    .bank-icbc { border-left-color: #c4161c; }
+    .bank-ccb { border-left-color: #004098; }
+    .bank-cmb { border-left-color: #c41230; }
+    .bank-bocom { border-left-color: #004a8f; }
+    .bank-abc { border-left-color: #007f4e; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="loading" id="loading">正在加载数据...</div>
-    
+
     <div class="error hidden" id="error">
       <div>❌ 数据加载失败</div>
       <div style="font-size: 14px; color: #999;">请稍后刷新页面重试</div>
     </div>
-    
+
     <div class="content" id="content" style="opacity: 0;">
       <div class="header">
         <h1 class="h1">今日英镑购汇价格</h1>
-        <div class="sub">中国银行 | 现汇卖出价（用人民币购买英镑）</div>
+        <div class="sub">六大银行现汇卖出价对比（用人民币购买英镑）</div>
         <div class="date" id="date">🇬🇧 日期：-- (UTC+0)</div>
       </div>
 
       <div class="main">
-        <div class="left">
-          <div class="label">今日英镑购汇价</div>
-          <div class="rate">
+        <div class="best-section">
+          <div class="best-label">最优购汇价</div>
+          <div class="best-bank">
+            <span class="crown">👑</span>
+            <span class="best-bank-badge" id="bestBankName">--</span>
+          </div>
+          <div class="best-rate">
             <span class="currency">1 GBP</span>
             <span class="equals">=</span>
-            <span class="value" id="rate">--</span>
+            <span class="value" id="bestRate">--</span>
             <span class="unit">CNY</span>
           </div>
-          <div class="change hidden" id="change">较上次: --</div>
+          <div class="best-change hidden" id="bestChange">较上次: --</div>
+        </div>
+
+        <div class="other-section">
+          <div class="other-title">全部银行汇率 (低→高)</div>
+          <div class="bank-list" id="bankList">
+            <!-- 动态生成 -->
+          </div>
         </div>
       </div>
-      
-      <!-- Hello Kitty 独立元素，不受 flex 容器限制 -->
+
       <div class="illustration">
         <img src="hello-kitty.png" alt="Hello Kitty">
       </div>
 
       <div class="foot" id="foot">
-        数据来源：中国银行外汇牌价<br/>
+        数据来源：各银行官网外汇牌价<br/>
         价格类型：现汇卖出价<br/>
         🇬🇧 更新时间：-- (UTC+0)
       </div>
@@ -249,15 +381,25 @@
     error: document.getElementById('error'),
     content: document.getElementById('content'),
     date: document.getElementById('date'),
-    rate: document.getElementById('rate'),
-    change: document.getElementById('change'),
+    bestBankName: document.getElementById('bestBankName'),
+    bestRate: document.getElementById('bestRate'),
+    bestChange: document.getElementById('bestChange'),
+    bankList: document.getElementById('bankList'),
     foot: document.getElementById('foot')
   };
-  
+
+  const bankColors = {
+    'BOC': '#e60012',
+    'ICBC': '#c4161c',
+    'CCB': '#004098',
+    'CMB': '#c41230',
+    'BOCOM': '#004a8f',
+    'ABC': '#007f4e'
+  };
+
   function formatDateTime(isoString) {
     try {
       const date = new Date(isoString);
-      // 格式化为英国时间（UTC+0）
       return date.toLocaleString('en-GB', {
         year: 'numeric',
         month: '2-digit',
@@ -271,28 +413,57 @@
       return isoString;
     }
   }
-  
+
   function showError() {
     elements.loading.classList.add('hidden');
     elements.error.classList.remove('hidden');
     elements.content.style.opacity = '0';
   }
-  
+
   function showContent() {
     elements.loading.classList.add('hidden');
     elements.error.classList.add('hidden');
     elements.content.style.opacity = '1';
     elements.content.style.transition = 'opacity 0.3s ease';
   }
-  
+
+  function formatChange(change, percent) {
+    if (change === undefined || change === 0) return null;
+    const arrow = change > 0 ? '↑' : '↓';
+    const sign = percent > 0 ? '+' : '';
+    return {
+      text: `${arrow} ${Math.abs(change).toFixed(4)} (${sign}${percent.toFixed(2)}%)`,
+      className: change > 0 ? 'up' : 'down'
+    };
+  }
+
+  function createBankItem(bank, isBest) {
+    const item = document.createElement('div');
+    item.className = `bank-item bank-${bank.bank_code.toLowerCase()}${isBest ? ' best' : ''}`;
+    item.style.borderLeftColor = bankColors[bank.bank_code] || '#ccc';
+
+    const changeInfo = formatChange(bank.rate_change, bank.rate_change_percent);
+    const changeHtml = changeInfo
+      ? `<span class="bank-change ${changeInfo.className}">${changeInfo.text}</span>`
+      : '<span class="bank-change neutral">--</span>';
+
+    item.innerHTML = `
+      <span class="bank-name">${bank.short_name}</span>
+      <span class="bank-rate">${bank.rate}</span>
+      ${changeHtml}
+    `;
+
+    return item;
+  }
+
   function updateUI(data) {
     // 检查数据状态
-    if (data.status === 'error') {
+    if (data.status === 'error' || !data.banks || data.banks.length === 0) {
       showError();
       return;
     }
-    
-    // 更新日期 - 使用英式格式与页脚统一
+
+    // 更新日期
     let dateDisplay = '--';
     if (data.fetched_at_utc) {
       try {
@@ -304,40 +475,48 @@
           timeZone: 'Europe/London'
         });
       } catch (e) {
-        dateDisplay = data.publish_time_raw ? data.publish_time_raw.split(' ')[0] : '--';
+        dateDisplay = '--';
       }
     }
     elements.date.textContent = `🇬🇧 日期: ${dateDisplay} (UTC+0)`;
-    
-    // 更新汇率
-    const rate = data.rate_cny_per_gbp || '--';
-    elements.rate.textContent = rate;
-    
-    // 更新变化
-    if (data.rate_change !== undefined && data.rate_change !== 0) {
-      const change = data.rate_change;
-      const percent = data.rate_change_percent || 0;
-      const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '';
-      const className = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-      
-      elements.change.textContent = `较上次: ${arrow} ${Math.abs(change).toFixed(4)} (${percent > 0 ? '+' : ''}${percent.toFixed(2)}%)`;
-      elements.change.className = `change ${className}`;
-      elements.change.classList.remove('hidden');
+
+    // 找到最优银行
+    const bestBank = data.banks[0]; // 已按汇率排序，第一个最优
+
+    // 更新最优银行信息
+    elements.bestBankName.textContent = bestBank.short_name;
+    elements.bestBankName.style.background = bankColors[bestBank.bank_code] || '#e60012';
+    elements.bestRate.textContent = bestBank.rate;
+
+    // 更新最优银行变化
+    const bestChangeInfo = formatChange(bestBank.rate_change, bestBank.rate_change_percent);
+    if (bestChangeInfo) {
+      elements.bestChange.textContent = `较上次: ${bestChangeInfo.text}`;
+      elements.bestChange.className = `best-change ${bestChangeInfo.className}`;
+      elements.bestChange.classList.remove('hidden');
     }
-    
+
+    // 生成银行列表
+    elements.bankList.innerHTML = '';
+    data.banks.forEach((bank, index) => {
+      const isBest = index === 0;
+      const item = createBankItem(bank, isBest);
+      elements.bankList.appendChild(item);
+    });
+
     // 更新页脚
     const updateTime = formatDateTime(data.fetched_at_utc || '');
     elements.foot.innerHTML = `
-      数据来源: 中国银行外汇牌价<br/>
-      价格类型: ${data.boc_field || '现汇卖出价'}<br/>
+      数据来源: 各银行官网外汇牌价<br/>
+      价格类型: ${data.rate_type || '现汇卖出价'}<br/>
       🇬🇧 更新时间: ${updateTime} (UTC+0)
     `;
-    
+
     showContent();
   }
-  
+
   // 加载数据
-  fetch('./data.json', { 
+  fetch('./data.json', {
     cache: 'no-store',
     headers: { 'Cache-Control': 'no-cache' }
   })
