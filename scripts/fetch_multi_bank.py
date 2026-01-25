@@ -26,9 +26,8 @@ except ImportError:
     print("ERROR: BeautifulSoup not installed. Run: pip install beautifulsoup4")
     sys.exit(1)
 
-# 英镑汇率合理范围 (排除美元约6.9的干扰)
-# 历史上 GBP/CNY 在 8-13 之间波动
-VALID_RATE_RANGE = (8.0, 13.0)
+# 英镑汇率合理范围（仅用于最终验证，不用于筛选）
+VALID_RATE_RANGE = (5.0, 15.0)
 
 # 银行配置
 BANKS = {
@@ -73,6 +72,13 @@ BANKS = {
         "url": "https://ewealth.abchina.com/foreignexchange/listprice/",
         "color": "#007f4e",
         "needs_js": True
+    },
+    "HSBC": {
+        "name": "汇丰银行",
+        "short_name": "汇丰",
+        "url": "https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html",
+        "color": "#db0011",
+        "needs_js": False
     }
 }
 
@@ -100,45 +106,63 @@ def make_result(bank_code: str, rate: float, publish_time: str = "") -> Dict:
     }
 
 
+def is_gbp_currency_cell(text: str) -> bool:
+    """检查单元格是否是英镑币种标识"""
+    text = text.strip().upper()
+    # 必须包含英镑或GBP，但不能是纯数字
+    if '英镑' in text or 'GBP' in text:
+        # 确保这是币种名称，不是其他内容
+        return True
+    return False
+
+
 def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
-    """从HTML中提取英镑汇率"""
+    """从HTML中提取英镑汇率 - 改进版：先确认币种再提取数值"""
     soup = BeautifulSoup(html, 'html.parser')
 
     # 查找所有表格行
     for row in soup.find_all('tr'):
-        row_text = row.get_text()
-        if '英镑' not in row_text and 'GBP' not in row_text:
-            continue
-
         cells = row.find_all('td')
         if not cells:
             continue
 
         cell_texts = [c.get_text(strip=True).replace(',', '') for c in cells]
+
+        # 关键改进：检查第一个单元格是否是英镑币种
+        # 这样可以确保整行都是英镑数据
+        first_cell = cell_texts[0] if cell_texts else ""
+        if not is_gbp_currency_cell(first_cell):
+            # 也检查第二个单元格（有些表格第一列是序号）
+            second_cell = cell_texts[1] if len(cell_texts) > 1 else ""
+            if not is_gbp_currency_cell(second_cell):
+                continue
+
         print(f"    Found GBP row: {cell_texts[:6]}")
 
-        # 尝试从单元格中提取汇率
-        # 英镑汇率约 9.4-9.6，排除美元约 6.9
+        # 确认是英镑行后，提取所有数值
         rates_found = []
         for text in cell_texts:
             try:
                 val = float(text)
-                # 100外币 = xxx人民币 格式 (英镑约 940-960)
-                if 800 < val < 1300:
+                # 100外币 = xxx人民币 格式
+                if 100 < val < 2000:
                     rates_found.append(val / 100.0)
-                # 直接汇率格式 (英镑约 8-13)
-                elif 8.0 < val < 13.0:
+                # 直接汇率格式
+                elif 1 < val < 20:
                     rates_found.append(val)
             except ValueError:
                 continue
 
         if rates_found:
-            # 通常卖出价是第二个或第三个数值
-            # 取第三个值（如果有），否则取第二个，否则取第一个
-            if len(rates_found) >= 3:
-                rate = rates_found[2]  # 现汇卖出价通常在第3位
+            print(f"    Rates found: {rates_found}")
+            # 选择卖出价：
+            # - 如果有4个以上数值，通常第3个是现汇卖出价（买入、买入、卖出、卖出）
+            # - 如果有2-3个数值，取第2个（买入、卖出）
+            # - 如果只有1个，就用它
+            if len(rates_found) >= 4:
+                rate = rates_found[2]  # 现汇卖出价
             elif len(rates_found) >= 2:
-                rate = rates_found[1]
+                rate = rates_found[1]  # 卖出价
             else:
                 rate = rates_found[0]
 
