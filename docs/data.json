@@ -2,19 +2,21 @@
   "currency": "英镑",
   "pair": "GBP/CNY",
   "rate_type": "现汇卖出价",
-  "best_bank": "HSBC",
-  "best_rate": 6.0,
+  "best_bank": "CCB",
+  "best_rate": 9.4746,
   "banks": [
     {
-      "bank_code": "HSBC",
-      "bank_name": "汇丰银行",
-      "short_name": "汇丰",
-      "rate": 6.0,
+      "bank_code": "CCB",
+      "bank_name": "中国建设银行",
+      "short_name": "建行",
+      "rate": 9.4746,
       "rate_type": "现汇卖出价",
       "publish_time": "",
-      "source_url": "https://www.services.cn-banking.hsbc.com.cn/PublicContent/common/rate/zh/exchange-rates.html",
-      "color": "#db0011",
-      "status": "success"
+      "source_url": "https://www2.ccb.com/chn/forex/exchange-quotations.shtml",
+      "color": "#004098",
+      "status": "success",
+      "rate_change": -0.0666,
+      "rate_change_percent": -0.7
     },
     {
       "bank_code": "ICBC",
@@ -56,17 +58,6 @@
       "rate_change_percent": 0.0
     },
     {
-      "bank_code": "CCB",
-      "bank_name": "中国建设银行",
-      "short_name": "建行",
-      "rate": 9.5412,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://www2.ccb.com/chn/forex/exchange-quotations.shtml",
-      "color": "#004098",
-      "status": "success"
-    },
-    {
       "bank_code": "BOC",
       "bank_name": "中国银行",
       "short_name": "中行",
@@ -76,12 +67,12 @@
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
-      "rate_change": 0.0704,
-      "rate_change_percent": 0.74
+      "rate_change": 0.0,
+      "rate_change_percent": 0.0
     }
   ],
-  "bank_count": 6,
-  "fetched_at_utc": "2026-01-25T14:42:10.361579+00:00",
-  "fetched_at_beijing": "2026-01-25 14:42:10",
+  "bank_count": 5,
+  "fetched_at_utc": "2026-01-25T14:53:55.729057+00:00",
+  "fetched_at_beijing": "2026-01-25 14:53:55",
   "status": "success"
 }
