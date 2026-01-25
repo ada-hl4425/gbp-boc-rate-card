@@ -154,15 +154,12 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 continue
 
         if rates_found:
-            print(f"    Rates found: {rates_found}")
-            # 选择卖出价：
-            # - 如果有4个以上数值，通常第3个是现汇卖出价（买入、买入、卖出、卖出）
-            # - 如果有2-3个数值，取第2个（买入、卖出）
-            # - 如果只有1个，就用它
-            if len(rates_found) >= 4:
-                rate = rates_found[2]  # 现汇卖出价
-            elif len(rates_found) >= 2:
+            print(f"    Rates found (first 4): {rates_found[:4]}")
+            # 已确认是英镑行，直接取第二个值作为卖出价
+            # 格式通常是：买入价, 卖出价, ...
+            if len(rates_found) >= 2:
                 rate = rates_found[1]  # 卖出价
+                print(f"    Selected: buy={rates_found[0]}, sell={rates_found[1]}")
             else:
                 rate = rates_found[0]
 
