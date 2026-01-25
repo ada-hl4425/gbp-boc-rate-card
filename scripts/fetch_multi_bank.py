@@ -122,11 +122,11 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
 
     # 方法1：查找表格行
     for row in soup.find_all('tr'):
-        cells = row.find_all('td')
+        cells = row.find_all(['td', 'th'])  # 也检查 th 元素
         if not cells:
             continue
 
-        cell_texts = [c.get_text(strip=True).replace(',', '') for c in cells]
+        cell_texts = [c.get_text(strip=True).replace(',', '').replace('\xa0', ' ') for c in cells]
         row_text = ' '.join(cell_texts)
 
         # 检查是否包含英镑
@@ -143,8 +143,8 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 # 100外币 = xxx人民币 格式
                 if 100 < val < 2000:
                     rates_found.append(val / 100.0)
-                # 直接汇率格式
-                elif 1 < val < 20:
+                # 直接汇率格式 (英镑通常在 8-12 之间，但要留余地)
+                elif 5 < val < 20:
                     rates_found.append(val)
             except ValueError:
                 continue
@@ -164,26 +164,32 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                         break
                 return rate, publish_time
 
-    # 方法2：如果表格方法失败，尝试搜索整个页面
-    # 找到"英镑"附近的数字
-    gbp_match = re.search(r'英镑[^0-9]*(\d{1,4}\.?\d*)[^0-9]*(\d{1,4}\.?\d*)?', html)
-    if gbp_match:
-        rates = []
-        for g in gbp_match.groups():
-            if g:
+    # 方法2：如果表格方法失败，尝试用正则搜索整个页面
+    # 找到"英镑"或"GBP"附近的数字（格式如 9.5412 或 954.12）
+    patterns = [
+        r'英镑[^0-9]{0,30}(\d+\.\d{2,})',  # 英镑后面的小数
+        r'GBP[^0-9]{0,30}(\d+\.\d{2,})',   # GBP后面的小数
+        r'(\d{3}\.\d+)[^0-9]{0,10}英镑',   # 英镑前面的数字（如 954.44 英镑）
+    ]
+
+    for pattern in patterns:
+        matches = re.findall(pattern, html, re.IGNORECASE)
+        if matches:
+            rates = []
+            for m in matches:
                 try:
-                    val = float(g)
-                    if 100 < val < 2000:
+                    val = float(m)
+                    if 800 < val < 1300:  # 100外币格式，英镑约 900-1000
                         rates.append(val / 100.0)
-                    elif 1 < val < 20:
+                    elif 8 < val < 13:  # 直接格式，英镑约 9-10
                         rates.append(val)
                 except ValueError:
                     pass
-        if rates:
-            rate = max(rates)
-            print(f"    Found via regex: {rate}")
-            if validate_rate(rate, bank_code):
-                return rate, ""
+            if rates:
+                rate = max(rates)
+                print(f"    Found via regex ({pattern[:20]}...): {rate}")
+                if validate_rate(rate, bank_code):
+                    return rate, ""
 
     return None
 
