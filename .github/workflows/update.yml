@@ -2,17 +2,10 @@ name: Update Multi-Bank GBP Rate
 
 on:
   schedule:
-    # 英国时间每天 0:00，仅工作日运行（周一至周五）
+    # UTC 时间每天 0:00，仅工作日运行（周一至周五）
     - cron: "0 0 * * 1-5"
 
   workflow_dispatch:  # 允许手动触发
-
-  push:
-    branches:
-      - main
-    paths:
-      - 'scripts/**'
-      - '.github/workflows/update.yml'
 
 permissions:
   contents: write
