@@ -50,7 +50,7 @@
       "short_name": "中行",
       "rate": 9.5444,
       "rate_type": "现汇卖出价",
-      "publish_time": "2026/01/26 00:00:05",
+      "publish_time": "2026/01/26 05:30:00",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
@@ -61,18 +61,18 @@
       "bank_code": "CMB",
       "bank_name": "招商银行",
       "short_name": "招行",
-      "rate": 9.5549,
+      "rate": 9.5591,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://fx.cmbchina.com/hq/",
       "color": "#c41230",
       "status": "success",
-      "rate_change": 0.0112,
-      "rate_change_percent": 0.12
+      "rate_change": 0.0042,
+      "rate_change_percent": 0.04
     }
   ],
   "bank_count": 5,
-  "fetched_at_utc": "2026-01-25T20:23:28.374130+00:00",
-  "fetched_at_beijing": "2026-01-25 20:23:28",
+  "fetched_at_utc": "2026-01-25T22:19:41.895298+00:00",
+  "fetched_at_beijing": "2026-01-25 22:19:41",
   "status": "success"
 }
