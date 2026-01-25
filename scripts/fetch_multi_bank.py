@@ -165,16 +165,17 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 return rate, publish_time
 
     # 方法2：如果表格方法失败，尝试用正则搜索整个页面
-    # 找到"英镑"或"GBP"附近的数字（格式如 9.5412 或 954.12）
-    # 注意：HSBC等网站HTML标签很多，需要放宽距离限制
+    # 注意：HSBC等网站HTML标签很多，需要灵活匹配
     patterns = [
-        r'英镑[^0-9]{0,200}(\d+\.\d{2,})',  # 英镑后面的小数（放宽到200字符）
+        r'GBP\)</td><td[^>]*>(\d+\.\d+)',   # HSBC格式: GBP)</td><td>9.6157
+        r'英镑.*?</td>.*?<td[^>]*>(\d+\.\d+)',  # 通用表格格式
+        r'英镑[^0-9]{0,200}(\d+\.\d{2,})',  # 英镑后面的小数
         r'GBP[^0-9]{0,200}(\d+\.\d{2,})',   # GBP后面的小数
         r'(\d{3}\.\d+)[^0-9]{0,50}英镑',    # 英镑前面的数字
     ]
 
     for pattern in patterns:
-        matches = re.findall(pattern, html, re.IGNORECASE)
+        matches = re.findall(pattern, html, re.IGNORECASE | re.DOTALL)
         if matches:
             rates = []
             for m in matches:
