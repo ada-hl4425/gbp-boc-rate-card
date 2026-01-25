@@ -203,14 +203,22 @@ def fetch_icbc() -> Optional[Dict]:
     try:
         content = fetch_url(url)
         html = decode_content(content)
+
+        # 调试：检查页面是否包含英镑数据
+        has_gbp = '英镑' in html or 'GBP' in html
+        print(f"  [DEBUG] Page length: {len(html)}, has GBP: {has_gbp}")
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # 工行页面使用表格展示
         for row in soup.find_all('tr'):
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                print(f"  [DEBUG] Found GBP row: {row_text[:100]}")
                 cells = row.find_all('td')
                 if len(cells) >= 5:
+                    cell_values = [c.get_text(strip=True) for c in cells]
+                    print(f"  [DEBUG] Cells: {cell_values}")
                     # 工行格式通常是：币种 | 现汇买入 | 现钞买入 | 现汇卖出 | 现钞卖出
                     for i, cell in enumerate(cells):
                         text = cell.get_text(strip=True).replace(',', '')
@@ -223,6 +231,13 @@ def fetch_icbc() -> Optional[Dict]:
                                     return make_result(bank_code, rate)
                         except ValueError:
                             continue
+
+        # 备用：尝试从整个页面中用正则提取
+        if has_gbp:
+            rate = extract_gbp_rate(html, bank_code)
+            if rate:
+                print(f"  ✓ {bank_code}: {rate} (from regex)")
+                return make_result(bank_code, rate)
 
         raise RuntimeError("GBP not found")
     except Exception as e:
@@ -239,13 +254,20 @@ def fetch_ccb() -> Optional[Dict]:
     try:
         content = fetch_url(url)
         html = decode_content(content)
+
+        has_gbp = '英镑' in html or 'GBP' in html
+        print(f"  [DEBUG] Page length: {len(html)}, has GBP: {has_gbp}")
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # 建行页面查找英镑行
         for row in soup.find_all('tr'):
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                print(f"  [DEBUG] Found GBP row: {row_text[:100]}")
                 cells = row.find_all('td')
+                cell_values = [c.get_text(strip=True) for c in cells]
+                print(f"  [DEBUG] Cells: {cell_values}")
                 for cell in cells:
                     text = cell.get_text(strip=True).replace(',', '')
                     try:
@@ -259,10 +281,10 @@ def fetch_ccb() -> Optional[Dict]:
                         continue
 
         # 备用：尝试从整个页面提取
-        if '英镑' in html or 'GBP' in html:
+        if has_gbp:
             rate = extract_gbp_rate(html, bank_code)
             if rate:
-                print(f"  ✓ {bank_code}: {rate}")
+                print(f"  ✓ {bank_code}: {rate} (from regex)")
                 return make_result(bank_code, rate)
 
         raise RuntimeError("GBP not found")
@@ -280,13 +302,20 @@ def fetch_cmb() -> Optional[Dict]:
     try:
         content = fetch_url(url)
         html = decode_content(content)
+
+        has_gbp = '英镑' in html or 'GBP' in html
+        print(f"  [DEBUG] Page length: {len(html)}, has GBP: {has_gbp}")
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # 招行页面查找英镑
         for row in soup.find_all('tr'):
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                print(f"  [DEBUG] Found GBP row: {row_text[:100]}")
                 cells = row.find_all('td')
+                cell_values = [c.get_text(strip=True) for c in cells]
+                print(f"  [DEBUG] Cells: {cell_values}")
                 for cell in cells:
                     text = cell.get_text(strip=True).replace(',', '')
                     try:
@@ -300,10 +329,10 @@ def fetch_cmb() -> Optional[Dict]:
                         continue
 
         # 备用方案
-        if '英镑' in html or 'GBP' in html:
+        if has_gbp:
             rate = extract_gbp_rate(html, bank_code)
             if rate:
-                print(f"  ✓ {bank_code}: {rate}")
+                print(f"  ✓ {bank_code}: {rate} (from regex)")
                 return make_result(bank_code, rate)
 
         raise RuntimeError("GBP not found")
@@ -321,13 +350,20 @@ def fetch_bocom() -> Optional[Dict]:
     try:
         content = fetch_url(url)
         html = decode_content(content)
+
+        has_gbp = '英镑' in html or 'GBP' in html
+        print(f"  [DEBUG] Page length: {len(html)}, has GBP: {has_gbp}")
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # 交行页面查找英镑
         for row in soup.find_all('tr'):
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                print(f"  [DEBUG] Found GBP row: {row_text[:100]}")
                 cells = row.find_all('td')
+                cell_values = [c.get_text(strip=True) for c in cells]
+                print(f"  [DEBUG] Cells: {cell_values}")
                 for cell in cells:
                     text = cell.get_text(strip=True).replace(',', '')
                     try:
@@ -341,10 +377,10 @@ def fetch_bocom() -> Optional[Dict]:
                         continue
 
         # 备用
-        if '英镑' in html or 'GBP' in html:
+        if has_gbp:
             rate = extract_gbp_rate(html, bank_code)
             if rate:
-                print(f"  ✓ {bank_code}: {rate}")
+                print(f"  ✓ {bank_code}: {rate} (from regex)")
                 return make_result(bank_code, rate)
 
         raise RuntimeError("GBP not found")
@@ -362,13 +398,20 @@ def fetch_abc() -> Optional[Dict]:
     try:
         content = fetch_url(url)
         html = decode_content(content)
+
+        has_gbp = '英镑' in html or 'GBP' in html
+        print(f"  [DEBUG] Page length: {len(html)}, has GBP: {has_gbp}")
+
         soup = BeautifulSoup(html, 'html.parser')
 
         # 农行页面查找英镑
         for row in soup.find_all('tr'):
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                print(f"  [DEBUG] Found GBP row: {row_text[:100]}")
                 cells = row.find_all('td')
+                cell_values = [c.get_text(strip=True) for c in cells]
+                print(f"  [DEBUG] Cells: {cell_values}")
                 for cell in cells:
                     text = cell.get_text(strip=True).replace(',', '')
                     try:
@@ -382,10 +425,10 @@ def fetch_abc() -> Optional[Dict]:
                         continue
 
         # 备用
-        if '英镑' in html or 'GBP' in html:
+        if has_gbp:
             rate = extract_gbp_rate(html, bank_code)
             if rate:
-                print(f"  ✓ {bank_code}: {rate}")
+                print(f"  ✓ {bank_code}: {rate} (from regex)")
                 return make_result(bank_code, rate)
 
         raise RuntimeError("GBP not found")
