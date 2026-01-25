@@ -2,8 +2,8 @@ name: Update Multi-Bank GBP Rate
 
 on:
   schedule:
-    # 每2小时运行一次（北京时间 8:00, 10:00, 12:00, etc）
-    - cron: "0 0,2,4,6,8,10,12,14,16,18,20,22 * * *"
+    # 英国时间每天 0:00，仅工作日运行（周一至周五）
+    - cron: "0 0 * * 1-5"
 
   workflow_dispatch:  # 允许手动触发
 
