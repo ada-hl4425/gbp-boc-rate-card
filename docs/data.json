@@ -11,7 +11,7 @@
       "short_name": "中行",
       "rate": 9.5444,
       "rate_type": "现汇卖出价",
-      "publish_time": "2026/01/25 05:30:00",
+      "publish_time": "2026/01/25 10:30:00",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
@@ -20,7 +20,7 @@
     }
   ],
   "bank_count": 1,
-  "fetched_at_utc": "2026-01-25T01:45:30.453676+00:00",
-  "fetched_at_beijing": "2026-01-25 01:45:30",
+  "fetched_at_utc": "2026-01-25T03:52:10.970439+00:00",
+  "fetched_at_beijing": "2026-01-25 03:52:10",
   "status": "success"
 }
