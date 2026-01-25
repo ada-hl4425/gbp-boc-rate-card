@@ -9,6 +9,7 @@ import json
 import sys
 import time
 import re
+import ssl
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Optional, List
@@ -21,6 +22,13 @@ try:
 except ImportError:
     print("ERROR: BeautifulSoup not installed. Run: pip install beautifulsoup4")
     sys.exit(1)
+
+# 创建允许旧 SSL 的上下文
+SSL_CONTEXT = ssl.create_default_context()
+SSL_CONTEXT.check_hostname = False
+SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+# 允许旧的 SSL 协商
+SSL_CONTEXT.options |= ssl.OP_LEGACY_SERVER_CONNECT if hasattr(ssl, 'OP_LEGACY_SERVER_CONNECT') else 0x4
 
 
 MAX_RETRIES = 3
@@ -69,12 +77,11 @@ BANKS = {
 
 
 def fetch_url(url: str, headers: Dict = None, retries: int = MAX_RETRIES) -> bytes:
-    """带重试机制的 URL 获取"""
+    """带重试机制的 URL 获取，支持旧 SSL"""
     default_headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-        "Accept-Encoding": "gzip, deflate",
         "Connection": "keep-alive",
     }
     if headers:
@@ -83,7 +90,8 @@ def fetch_url(url: str, headers: Dict = None, retries: int = MAX_RETRIES) -> byt
     for attempt in range(retries):
         try:
             req = Request(url, headers=default_headers)
-            with urlopen(req, timeout=30) as resp:
+            # 使用自定义 SSL 上下文支持旧服务器
+            with urlopen(req, timeout=30, context=SSL_CONTEXT) as resp:
                 return resp.read()
         except (URLError, HTTPError) as e:
             print(f"  Attempt {attempt + 1}/{retries} failed: {e}")
