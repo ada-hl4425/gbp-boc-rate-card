@@ -32,19 +32,6 @@
       "rate_change_percent": 0.0
     },
     {
-      "bank_code": "CMB",
-      "bank_name": "招商银行",
-      "short_name": "招行",
-      "rate": 9.5332,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://fx.cmbchina.com/hq/",
-      "color": "#c41230",
-      "status": "success",
-      "rate_change": 0.0,
-      "rate_change_percent": 0.0
-    },
-    {
       "bank_code": "ABC",
       "bank_name": "中国农业银行",
       "short_name": "农行",
@@ -58,12 +45,25 @@
       "rate_change_percent": 0.0
     },
     {
+      "bank_code": "CMB",
+      "bank_name": "招商银行",
+      "short_name": "招行",
+      "rate": 9.5437,
+      "rate_type": "现汇卖出价",
+      "publish_time": "",
+      "source_url": "https://fx.cmbchina.com/hq/",
+      "color": "#c41230",
+      "status": "success",
+      "rate_change": 0.0105,
+      "rate_change_percent": 0.11
+    },
+    {
       "bank_code": "BOC",
       "bank_name": "中国银行",
       "short_name": "中行",
       "rate": 9.5444,
       "rate_type": "现汇卖出价",
-      "publish_time": "2026/01/25 10:30:00",
+      "publish_time": "2026/01/26 00:00:05",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
@@ -72,7 +72,7 @@
     }
   ],
   "bank_count": 5,
-  "fetched_at_utc": "2026-01-25T15:16:03.787060+00:00",
-  "fetched_at_beijing": "2026-01-25 15:16:03",
+  "fetched_at_utc": "2026-01-25T16:23:59.717523+00:00",
+  "fetched_at_beijing": "2026-01-25 16:23:59",
   "status": "success"
 }
