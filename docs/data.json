@@ -14,66 +14,13 @@
       "publish_time": "2026/01/25 05:30:00",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
-      "status": "success"
-    },
-    {
-      "bank_code": "ICBC",
-      "bank_name": "中国工商银行",
-      "short_name": "工行",
-      "rate": 9.5512,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://icbc.com.cn/column/1438058341489590354.html",
-      "color": "#c4161c",
-      "status": "success"
-    },
-    {
-      "bank_code": "CCB",
-      "bank_name": "中国建设银行",
-      "short_name": "建行",
-      "rate": 9.5589,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "http://forex.ccb.com/cn/forex/exchange-quotations.html",
-      "color": "#004098",
-      "status": "success"
-    },
-    {
-      "bank_code": "ABC",
-      "bank_name": "中国农业银行",
-      "short_name": "农行",
-      "rate": 9.5621,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://www.abchina.com/cn/ForeignExchange/",
-      "color": "#007f4e",
-      "status": "success"
-    },
-    {
-      "bank_code": "BOCOM",
-      "bank_name": "交通银行",
-      "short_name": "交行",
-      "rate": 9.5678,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://www.bankcomm.com/BankCommSite/zonghang/cn/whpj/rmbwhpj/index.html",
-      "color": "#004a8f",
-      "status": "success"
-    },
-    {
-      "bank_code": "CMB",
-      "bank_name": "招商银行",
-      "short_name": "招行",
-      "rate": 9.5756,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://www.cmbchina.com/CmbWebPubInfo/RateResult.aspx?chnl=whjjckll",
-      "color": "#c41230",
-      "status": "success"
+      "status": "success",
+      "rate_change": 0.0,
+      "rate_change_percent": 0.0
     }
   ],
-  "bank_count": 6,
-  "fetched_at_utc": "2026-01-25T01:00:00.000000+00:00",
-  "fetched_at_beijing": "2026-01-25 09:00:00",
+  "bank_count": 1,
+  "fetched_at_utc": "2026-01-25T01:02:37.577297+00:00",
+  "fetched_at_beijing": "2026-01-25 01:02:37",
   "status": "success"
 }
