@@ -2,9 +2,7 @@
 """
 多银行英镑汇率抓取脚本
 支持银行：中国银行、工商银行、建设银行、招商银行、交通银行、农业银行
-- 优先使用 API 接口，更可靠
-- 并行获取所有银行汇率
-- 自动找出最优汇率
+使用各银行官方外汇牌价页面
 """
 
 import json
@@ -34,31 +32,37 @@ BANKS = {
     "BOC": {
         "name": "中国银行",
         "short_name": "中行",
+        "url": "https://www.boc.cn/sourcedb/whpj/",
         "color": "#e60012"
     },
     "ICBC": {
         "name": "中国工商银行",
         "short_name": "工行",
+        "url": "https://www.icbc.com.cn/column/1438058341489590354.html",
         "color": "#c4161c"
     },
     "CCB": {
         "name": "中国建设银行",
         "short_name": "建行",
+        "url": "https://www2.ccb.com/chn/forex/exchange-quotations.shtml",
         "color": "#004098"
     },
     "CMB": {
         "name": "招商银行",
         "short_name": "招行",
+        "url": "https://fx.cmbchina.com/hq/",
         "color": "#c41230"
     },
     "BOCOM": {
         "name": "交通银行",
         "short_name": "交行",
+        "url": "https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7158/7161/8091/list.shtml",
         "color": "#004a8f"
     },
     "ABC": {
         "name": "中国农业银行",
         "short_name": "农行",
+        "url": "https://ewealth.abchina.com/foreignexchange/listprice/",
         "color": "#007f4e"
     }
 }
@@ -68,8 +72,10 @@ def fetch_url(url: str, headers: Dict = None, retries: int = MAX_RETRIES) -> byt
     """带重试机制的 URL 获取"""
     default_headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
     }
     if headers:
         default_headers.update(headers)
@@ -80,7 +86,7 @@ def fetch_url(url: str, headers: Dict = None, retries: int = MAX_RETRIES) -> byt
             with urlopen(req, timeout=30) as resp:
                 return resp.read()
         except (URLError, HTTPError) as e:
-            print(f"  Attempt {attempt + 1}/{retries} failed for {url}: {e}")
+            print(f"  Attempt {attempt + 1}/{retries} failed: {e}")
             if attempt < retries - 1:
                 time.sleep(RETRY_DELAY)
             else:
@@ -88,15 +94,25 @@ def fetch_url(url: str, headers: Dict = None, retries: int = MAX_RETRIES) -> byt
     return b""
 
 
+def decode_content(content: bytes) -> str:
+    """尝试多种编码解码"""
+    for encoding in ['utf-8', 'gbk', 'gb2312', 'gb18030']:
+        try:
+            return content.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return content.decode('utf-8', errors='ignore')
+
+
 def validate_rate(rate: float, bank_code: str) -> bool:
     """验证汇率是否在合理范围内"""
     if not (VALID_RATE_RANGE[0] <= rate <= VALID_RATE_RANGE[1]):
-        print(f"  Warning: {bank_code} rate {rate} is outside valid range {VALID_RATE_RANGE}")
+        print(f"  Warning: {bank_code} rate {rate} outside valid range")
         return False
     return True
 
 
-def make_result(bank_code: str, rate: float, source_url: str, publish_time: str = "") -> Dict:
+def make_result(bank_code: str, rate: float, publish_time: str = "") -> Dict:
     """构建统一的返回结果"""
     return {
         "bank_code": bank_code,
@@ -105,23 +121,44 @@ def make_result(bank_code: str, rate: float, source_url: str, publish_time: str 
         "rate": round(rate, 4),
         "rate_type": "现汇卖出价",
         "publish_time": publish_time,
-        "source_url": source_url,
+        "source_url": BANKS[bank_code]["url"],
         "color": BANKS[bank_code]["color"],
         "status": "success"
     }
 
 
+def extract_gbp_rate(text: str, bank_code: str) -> Optional[float]:
+    """从文本中提取英镑汇率"""
+    # 查找所有可能的数值（格式：9xx.xx 或 9.xxxx）
+    numbers = re.findall(r'(\d{3,4}\.?\d*)', text)
+    for num_str in numbers:
+        try:
+            val = float(num_str)
+            # 判断是否是 100外币 = xxx人民币 的格式
+            if 500 < val < 1500:
+                rate = val / 100.0
+                if validate_rate(rate, bank_code):
+                    return rate
+            # 或者直接是汇率格式
+            elif 5 < val < 15:
+                if validate_rate(val, bank_code):
+                    return val
+        except ValueError:
+            continue
+    return None
+
+
 # ==================== 各银行解析函数 ====================
 
 def fetch_boc() -> Optional[Dict]:
-    """中国银行 - 官网HTML解析"""
+    """中国银行 - https://www.boc.cn/sourcedb/whpj/"""
     bank_code = "BOC"
-    url = "https://www.boc.cn/sourcedb/whpj/"
-    print(f"Fetching {bank_code}...")
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
 
     try:
         content = fetch_url(url)
-        html = content.decode('utf-8', errors='ignore')
+        html = decode_content(content)
         soup = BeautifulSoup(html, 'html.parser')
 
         for row in soup.find_all('tr'):
@@ -134,192 +171,73 @@ def fetch_boc() -> Optional[Dict]:
                 continue
 
             # 中行格式：货币名称 | 现汇买入价 | 现钞买入价 | 现汇卖出价 | 现钞卖出价 | 中行折算价 | 发布时间
-            rate_per_100 = float(cell_texts[3].replace(',', ''))
+            rate_str = cell_texts[3].replace(',', '')
+            rate_per_100 = float(rate_str)
             rate = rate_per_100 / 100.0
             publish_time = cell_texts[6] if len(cell_texts) > 6 else ""
 
             if validate_rate(rate, bank_code):
-                return make_result(bank_code, rate, url, publish_time)
+                print(f"  ✓ {bank_code}: {rate}")
+                return make_result(bank_code, rate, publish_time)
 
-        raise RuntimeError("Could not find GBP rate in BOC page")
+        raise RuntimeError("GBP not found")
     except Exception as e:
-        print(f"  Error fetching {bank_code}: {e}")
+        print(f"  ✗ {bank_code}: {e}")
         return None
 
 
 def fetch_icbc() -> Optional[Dict]:
-    """工商银行 - API接口"""
+    """工商银行 - https://www.icbc.com.cn/column/1438058341489590354.html"""
     bank_code = "ICBC"
-    # 工商银行外汇牌价 API
-    url = "https://papi.icbc.com.cn/exchanges/quotation?currencyCode=13"  # 13 = GBP
-    print(f"Fetching {bank_code}...")
-
-    try:
-        headers = {
-            "Accept": "application/json",
-            "Referer": "https://icbc.com.cn/"
-        }
-        content = fetch_url(url, headers)
-        data = json.loads(content.decode('utf-8'))
-
-        # API 返回格式：{"quotation": {"reference": "xxx", "sellPrice": "954.44", ...}}
-        if 'quotation' in data:
-            sell_price = data['quotation'].get('sellPrice') or data['quotation'].get('sellprice')
-            if sell_price:
-                rate = float(sell_price) / 100.0
-                if validate_rate(rate, bank_code):
-                    return make_result(bank_code, rate, "https://icbc.com.cn")
-
-        raise RuntimeError("Invalid API response")
-    except Exception as e:
-        print(f"  Error fetching {bank_code}: {e}")
-        # 备用方案：HTML解析
-        return fetch_icbc_html()
-
-
-def fetch_icbc_html() -> Optional[Dict]:
-    """工商银行 - HTML备用方案"""
-    bank_code = "ICBC"
-    url = "https://icbc.com.cn/column/1438058341489590354.html"
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
 
     try:
         content = fetch_url(url)
-        html = content.decode('utf-8', errors='ignore')
+        html = decode_content(content)
         soup = BeautifulSoup(html, 'html.parser')
 
+        # 工行页面使用表格展示
         for row in soup.find_all('tr'):
-            text = row.get_text()
-            if '英镑' in text or 'GBP' in text:
-                # 查找数值
-                numbers = re.findall(r'\d+\.\d+', text)
-                for num_str in numbers:
-                    val = float(num_str)
-                    if 500 < val < 1500:
-                        rate = val / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, url)
+            row_text = row.get_text()
+            if '英镑' in row_text or 'GBP' in row_text:
+                cells = row.find_all('td')
+                if len(cells) >= 5:
+                    # 工行格式通常是：币种 | 现汇买入 | 现钞买入 | 现汇卖出 | 现钞卖出
+                    for i, cell in enumerate(cells):
+                        text = cell.get_text(strip=True).replace(',', '')
+                        try:
+                            val = float(text)
+                            if 500 < val < 1500:
+                                rate = val / 100.0
+                                if validate_rate(rate, bank_code):
+                                    print(f"  ✓ {bank_code}: {rate}")
+                                    return make_result(bank_code, rate)
+                        except ValueError:
+                            continue
 
-        raise RuntimeError("Could not find GBP rate")
+        raise RuntimeError("GBP not found")
     except Exception as e:
-        print(f"  Error in ICBC HTML fallback: {e}")
+        print(f"  ✗ {bank_code}: {e}")
         return None
 
 
 def fetch_ccb() -> Optional[Dict]:
-    """建设银行 - API接口"""
+    """建设银行 - https://www2.ccb.com/chn/forex/exchange-quotations.shtml"""
     bank_code = "CCB"
-    # 建设银行外汇牌价 API
-    url = "https://forex.ccb.com/cn/forex/quotation/quotation.xml"
-    print(f"Fetching {bank_code}...")
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
 
     try:
         content = fetch_url(url)
-        text = content.decode('utf-8', errors='ignore')
-
-        # XML 格式解析
-        # 查找英镑的卖出价
-        gbp_match = re.search(r'<Currency>GBP</Currency>.*?<SE_BID>(\d+\.?\d*)</SE_BID>', text, re.DOTALL)
-        if gbp_match:
-            rate_per_100 = float(gbp_match.group(1))
-            rate = rate_per_100 / 100.0
-            if validate_rate(rate, bank_code):
-                return make_result(bank_code, rate, "https://forex.ccb.com")
-
-        # 备用：查找英镑相关数值
-        if '英镑' in text or 'GBP' in text:
-            numbers = re.findall(r'>(\d{3}\.\d+)<', text)
-            for num_str in numbers:
-                val = float(num_str)
-                if 500 < val < 1500:
-                    rate = val / 100.0
-                    if validate_rate(rate, bank_code):
-                        return make_result(bank_code, rate, "https://forex.ccb.com")
-
-        raise RuntimeError("Could not find GBP rate in CCB API")
-    except Exception as e:
-        print(f"  Error fetching {bank_code}: {e}")
-        return None
-
-
-def fetch_cmb() -> Optional[Dict]:
-    """招商银行 - API接口"""
-    bank_code = "CMB"
-    # 招商银行外汇牌价 API
-    url = "https://fx.cmbchina.com/api/v1/fx/rate"
-    print(f"Fetching {bank_code}...")
-
-    try:
-        headers = {
-            "Accept": "application/json",
-            "Referer": "https://www.cmbchina.com/"
-        }
-        content = fetch_url(url, headers)
-        data = json.loads(content.decode('utf-8'))
-
-        # 查找英镑
-        rates = data.get('data', data.get('body', []))
-        if isinstance(rates, list):
-            for item in rates:
-                currency = item.get('currency', item.get('currencyCode', ''))
-                if 'GBP' in currency or '英镑' in currency:
-                    sell = item.get('sellPrice', item.get('sell', item.get('SE_BID')))
-                    if sell:
-                        rate = float(sell) / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, "https://www.cmbchina.com")
-
-        raise RuntimeError("Could not find GBP rate in CMB API")
-    except Exception as e:
-        print(f"  Error fetching {bank_code}: {e}")
-        return fetch_cmb_html()
-
-
-def fetch_cmb_html() -> Optional[Dict]:
-    """招商银行 - HTML备用方案"""
-    bank_code = "CMB"
-    url = "https://www.cmbchina.com/CmbWebPubInfo/RateResult.aspx?chnl=whjjckll"
-
-    try:
-        content = fetch_url(url)
-        html = content.decode('utf-8', errors='ignore')
+        html = decode_content(content)
         soup = BeautifulSoup(html, 'html.parser')
 
+        # 建行页面查找英镑行
         for row in soup.find_all('tr'):
-            text = row.get_text()
-            if '英镑' in text or 'GBP' in text:
-                numbers = re.findall(r'\d+\.\d+', text)
-                for num_str in numbers:
-                    val = float(num_str)
-                    if 500 < val < 1500:
-                        rate = val / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, url)
-
-        raise RuntimeError("Could not find GBP rate")
-    except Exception as e:
-        print(f"  Error in CMB HTML fallback: {e}")
-        return None
-
-
-def fetch_bocom() -> Optional[Dict]:
-    """交通银行 - API/HTML"""
-    bank_code = "BOCOM"
-    url = "https://www.bankcomm.com/BankCommSite/zonghang/cn/whpj/rmbwhpj/index.html"
-    print(f"Fetching {bank_code}...")
-
-    try:
-        content = fetch_url(url)
-        html = content.decode('utf-8', errors='ignore')
-        soup = BeautifulSoup(html, 'html.parser')
-
-        # 查找表格数据
-        for row in soup.find_all('tr'):
-            cells = row.find_all('td')
-            if len(cells) < 4:
-                continue
-
             row_text = row.get_text()
             if '英镑' in row_text or 'GBP' in row_text:
+                cells = row.find_all('td')
                 for cell in cells:
                     text = cell.get_text(strip=True).replace(',', '')
                     try:
@@ -327,86 +245,144 @@ def fetch_bocom() -> Optional[Dict]:
                         if 500 < val < 1500:
                             rate = val / 100.0
                             if validate_rate(rate, bank_code):
-                                return make_result(bank_code, rate, url)
+                                print(f"  ✓ {bank_code}: {rate}")
+                                return make_result(bank_code, rate)
                     except ValueError:
                         continue
 
-        # 尝试从脚本中提取数据
-        scripts = soup.find_all('script')
-        for script in scripts:
-            if script.string and ('英镑' in script.string or 'GBP' in script.string):
-                numbers = re.findall(r'(\d{3}\.\d+)', script.string)
-                for num_str in numbers:
-                    val = float(num_str)
-                    if 500 < val < 1500:
-                        rate = val / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, url)
+        # 备用：尝试从整个页面提取
+        if '英镑' in html or 'GBP' in html:
+            rate = extract_gbp_rate(html, bank_code)
+            if rate:
+                print(f"  ✓ {bank_code}: {rate}")
+                return make_result(bank_code, rate)
 
-        raise RuntimeError("Could not find GBP rate")
+        raise RuntimeError("GBP not found")
     except Exception as e:
-        print(f"  Error fetching {bank_code}: {e}")
+        print(f"  ✗ {bank_code}: {e}")
+        return None
+
+
+def fetch_cmb() -> Optional[Dict]:
+    """招商银行 - https://fx.cmbchina.com/hq/"""
+    bank_code = "CMB"
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
+
+    try:
+        content = fetch_url(url)
+        html = decode_content(content)
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # 招行页面查找英镑
+        for row in soup.find_all('tr'):
+            row_text = row.get_text()
+            if '英镑' in row_text or 'GBP' in row_text:
+                cells = row.find_all('td')
+                for cell in cells:
+                    text = cell.get_text(strip=True).replace(',', '')
+                    try:
+                        val = float(text)
+                        if 500 < val < 1500:
+                            rate = val / 100.0
+                            if validate_rate(rate, bank_code):
+                                print(f"  ✓ {bank_code}: {rate}")
+                                return make_result(bank_code, rate)
+                    except ValueError:
+                        continue
+
+        # 备用方案
+        if '英镑' in html or 'GBP' in html:
+            rate = extract_gbp_rate(html, bank_code)
+            if rate:
+                print(f"  ✓ {bank_code}: {rate}")
+                return make_result(bank_code, rate)
+
+        raise RuntimeError("GBP not found")
+    except Exception as e:
+        print(f"  ✗ {bank_code}: {e}")
+        return None
+
+
+def fetch_bocom() -> Optional[Dict]:
+    """交通银行 - https://www.bankcomm.com/BankCommSite/shtml/jyjr/cn/7158/7161/8091/list.shtml"""
+    bank_code = "BOCOM"
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
+
+    try:
+        content = fetch_url(url)
+        html = decode_content(content)
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # 交行页面查找英镑
+        for row in soup.find_all('tr'):
+            row_text = row.get_text()
+            if '英镑' in row_text or 'GBP' in row_text:
+                cells = row.find_all('td')
+                for cell in cells:
+                    text = cell.get_text(strip=True).replace(',', '')
+                    try:
+                        val = float(text)
+                        if 500 < val < 1500:
+                            rate = val / 100.0
+                            if validate_rate(rate, bank_code):
+                                print(f"  ✓ {bank_code}: {rate}")
+                                return make_result(bank_code, rate)
+                    except ValueError:
+                        continue
+
+        # 备用
+        if '英镑' in html or 'GBP' in html:
+            rate = extract_gbp_rate(html, bank_code)
+            if rate:
+                print(f"  ✓ {bank_code}: {rate}")
+                return make_result(bank_code, rate)
+
+        raise RuntimeError("GBP not found")
+    except Exception as e:
+        print(f"  ✗ {bank_code}: {e}")
         return None
 
 
 def fetch_abc() -> Optional[Dict]:
-    """农业银行 - API/HTML"""
+    """农业银行 - https://ewealth.abchina.com/foreignexchange/listprice/"""
     bank_code = "ABC"
-    # 农行外汇牌价页面
-    url = "https://ewealth.abchina.com/app/data/api/DataService/ExchangeRateV2"
-    print(f"Fetching {bank_code}...")
-
-    try:
-        # 尝试 API
-        headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Referer": "https://www.abchina.com/"
-        }
-        content = fetch_url(url, headers)
-        data = json.loads(content.decode('utf-8'))
-
-        rates = data.get('Data', data.get('data', []))
-        if isinstance(rates, list):
-            for item in rates:
-                currency = str(item.get('CurrencyName', item.get('Currency', '')))
-                if '英镑' in currency or 'GBP' in currency:
-                    sell = item.get('SellPrice', item.get('SE_BID'))
-                    if sell:
-                        rate = float(sell) / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, "https://www.abchina.com")
-
-        raise RuntimeError("Could not find GBP rate in ABC API")
-    except Exception as e:
-        print(f"  Error fetching {bank_code} API: {e}")
-        return fetch_abc_html()
-
-
-def fetch_abc_html() -> Optional[Dict]:
-    """农业银行 - HTML备用方案"""
-    bank_code = "ABC"
-    url = "https://www.abchina.com/cn/ForeignExchange/"
+    url = BANKS[bank_code]["url"]
+    print(f"Fetching {bank_code} from {url}")
 
     try:
         content = fetch_url(url)
-        html = content.decode('utf-8', errors='ignore')
+        html = decode_content(content)
         soup = BeautifulSoup(html, 'html.parser')
 
+        # 农行页面查找英镑
         for row in soup.find_all('tr'):
-            text = row.get_text()
-            if '英镑' in text or 'GBP' in text:
-                numbers = re.findall(r'\d+\.\d+', text)
-                for num_str in numbers:
-                    val = float(num_str)
-                    if 500 < val < 1500:
-                        rate = val / 100.0
-                        if validate_rate(rate, bank_code):
-                            return make_result(bank_code, rate, url)
+            row_text = row.get_text()
+            if '英镑' in row_text or 'GBP' in row_text:
+                cells = row.find_all('td')
+                for cell in cells:
+                    text = cell.get_text(strip=True).replace(',', '')
+                    try:
+                        val = float(text)
+                        if 500 < val < 1500:
+                            rate = val / 100.0
+                            if validate_rate(rate, bank_code):
+                                print(f"  ✓ {bank_code}: {rate}")
+                                return make_result(bank_code, rate)
+                    except ValueError:
+                        continue
 
-        raise RuntimeError("Could not find GBP rate")
+        # 备用
+        if '英镑' in html or 'GBP' in html:
+            rate = extract_gbp_rate(html, bank_code)
+            if rate:
+                print(f"  ✓ {bank_code}: {rate}")
+                return make_result(bank_code, rate)
+
+        raise RuntimeError("GBP not found")
     except Exception as e:
-        print(f"  Error in ABC HTML fallback: {e}")
+        print(f"  ✗ {bank_code}: {e}")
         return None
 
 
@@ -437,20 +413,10 @@ def fetch_all_banks() -> List[Dict]:
                 result = future.result()
                 if result:
                     results.append(result)
-                    print(f"  ✓ {bank_code}: {result['rate']} CNY/GBP")
-                else:
-                    print(f"  ✗ {bank_code}: Failed to fetch")
             except Exception as e:
                 print(f"  ✗ {bank_code}: Exception - {e}")
 
     return results
-
-
-def find_best_rate(banks: List[Dict]) -> Optional[Dict]:
-    """找出最优汇率（最低的卖出价）"""
-    if not banks:
-        return None
-    return min(banks, key=lambda x: x['rate'])
 
 
 def load_previous_data(filepath: Path) -> Optional[Dict]:
@@ -489,27 +455,29 @@ def save_data(data: Dict, filepath: Path):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"✓ Saved data to {filepath}")
+    print(f"✓ Saved to {filepath}")
 
 
 def main():
     output_path = Path("docs/data.json")
 
-    print(f"Starting multi-bank GBP rate fetch at {datetime.now().isoformat()}")
+    print(f"Multi-bank GBP rate fetch - {datetime.now().isoformat()}")
     print("=" * 60)
 
     try:
         previous_data = load_previous_data(output_path)
 
-        print("\nFetching rates from all banks...")
+        print("\nFetching from all banks...")
         banks = fetch_all_banks()
+
+        print(f"\nFetched {len(banks)} banks successfully")
 
         if not banks:
             raise RuntimeError("Failed to fetch any bank rates")
 
         banks = calculate_changes(banks, previous_data)
         banks.sort(key=lambda x: x['rate'])
-        best = find_best_rate(banks)
+        best = min(banks, key=lambda x: x['rate']) if banks else None
 
         now = datetime.now(timezone.utc)
         data = {
@@ -528,36 +496,20 @@ def main():
         save_data(data, output_path)
 
         print("\n" + "=" * 60)
-        print(f"Summary: {len(banks)} banks fetched")
+        print(f"Summary: {len(banks)}/6 banks")
         if best:
-            print(f"Best rate: {best['short_name']} - {best['rate']} CNY/GBP")
+            print(f"Best: {best['short_name']} = {best['rate']} CNY/GBP")
         for b in banks:
-            change_str = ""
+            change = ""
             if 'rate_change' in b:
                 arrow = "↑" if b['rate_change'] > 0 else "↓" if b['rate_change'] < 0 else "→"
-                change_str = f" ({arrow}{abs(b['rate_change']):.4f})"
-            print(f"  {b['short_name']}: {b['rate']}{change_str}")
+                change = f" ({arrow}{abs(b['rate_change']):.4f})"
+            print(f"  {b['short_name']}: {b['rate']}{change}")
 
-        print("\n✓ Task completed successfully")
         sys.exit(0)
 
     except Exception as e:
-        print(f"\n✗ Fatal error: {e}", file=sys.stderr)
-
-        if not output_path.exists():
-            error_data = {
-                "status": "error",
-                "error_message": str(e),
-                "fetched_at_utc": datetime.now(timezone.utc).isoformat(),
-                "banks": []
-            }
-            try:
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                with open(output_path, 'w', encoding='utf-8') as f:
-                    json.dump(error_data, f, ensure_ascii=False, indent=2)
-            except:
-                pass
-
+        print(f"\n✗ Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
