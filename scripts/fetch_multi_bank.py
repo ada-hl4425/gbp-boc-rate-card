@@ -180,9 +180,14 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
             except ValueError:
                 pass
 
-        if rates:
-            rate = max(rates)  # 取最高值作为卖出价
-            print(f"    Found via regex: {rates[:5]} -> max={rate}")
+        if len(rates) >= 2:
+            rate = rates[1]  # 第二个值是卖出价
+            print(f"    Found via regex: {rates[:5]} -> sell={rate}")
+            if validate_rate(rate, bank_code):
+                return rate, ""
+        elif len(rates) == 1:
+            rate = rates[0]
+            print(f"    Found via regex: {rates[:5]} -> only={rate}")
             if validate_rate(rate, bank_code):
                 return rate, ""
 
