@@ -158,31 +158,33 @@ def extract_gbp_rate_from_html(html: str, bank_code: str) -> Optional[tuple]:
                 return rate, publish_time
 
     # 方法2：如果表格方法失败，尝试用正则搜索整个页面
-    # 简单粗暴：找到"英镑"或"GBP"，然后提取附近所有数字
-    patterns = [
-        r'(?:英镑|GBP)[^0-9]*(\d+\.?\d*)',  # 英镑/GBP后面的第一个数字
-    ]
+    # 找到"英镑"或"GBP"，然后提取附近的所有数字，取最高值作为卖出价
+    gbp_match = re.search(r'(?:英镑|GBP)', html, re.IGNORECASE)
+    if gbp_match:
+        # 提取英镑后面500个字符的内容
+        start_pos = gbp_match.end()
+        snippet = html[start_pos:start_pos + 500]
 
-    for pattern in patterns:
-        matches = re.findall(pattern, html, re.IGNORECASE | re.DOTALL)
-        if matches:
-            rates = []
-            for m in matches:
-                try:
-                    val = float(m)
-                    # 100外币格式（如 954.44）
-                    if 100 < val < 2000:
-                        rates.append(val / 100.0)
-                    # 直接汇率格式（如 9.54）
-                    elif 5 < val < 20:
-                        rates.append(val)
-                except ValueError:
-                    pass
-            if rates:
-                rate = max(rates)  # 取最高值作为卖出价
-                print(f"    Found via regex: {rate} (from {len(matches)} matches)")
-                if validate_rate(rate, bank_code):
-                    return rate, ""
+        # 找出所有数字
+        numbers = re.findall(r'(\d+\.?\d*)', snippet)
+        rates = []
+        for num_str in numbers[:10]:  # 只看前10个数字
+            try:
+                val = float(num_str)
+                # 100外币格式（如 954.44）
+                if 100 < val < 2000:
+                    rates.append(val / 100.0)
+                # 直接汇率格式（如 9.54）
+                elif 5 < val < 20:
+                    rates.append(val)
+            except ValueError:
+                pass
+
+        if rates:
+            rate = max(rates)  # 取最高值作为卖出价
+            print(f"    Found via regex: {rates[:5]} -> max={rate}")
+            if validate_rate(rate, bank_code):
+                return rate, ""
 
     return None
 
