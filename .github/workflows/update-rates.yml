@@ -1,9 +1,9 @@
-name: Update Multi-Bank GBP Rate
+name: 0Update Multi-Bank GBP Rate
 
 on:
   schedule:
     # UTC 时间每天 0:00，仅工作日运行（周一至周五）
-    - cron: "0 0 * * 1-5"
+    - cron: "1 0 * * 1-5"
 
   workflow_dispatch:  # 允许手动触发
 
