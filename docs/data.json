@@ -2,77 +2,77 @@
   "currency": "英镑",
   "pair": "GBP/CNY",
   "rate_type": "现汇卖出价",
-  "best_bank": "ABC",
-  "best_rate": 9.3689,
+  "best_bank": "CCB",
+  "best_rate": 9.3416,
   "banks": [
-    {
-      "bank_code": "ABC",
-      "bank_name": "中国农业银行",
-      "short_name": "农行",
-      "rate": 9.3689,
-      "rate_type": "现汇卖出价",
-      "publish_time": "",
-      "source_url": "https://ewealth.abchina.com/foreignexchange/listprice/",
-      "color": "#007f4e",
-      "status": "success",
-      "rate_change": 0.0508,
-      "rate_change_percent": 0.55
-    },
     {
       "bank_code": "CCB",
       "bank_name": "中国建设银行",
       "short_name": "建行",
-      "rate": 9.3691,
+      "rate": 9.3416,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://www2.ccb.com/chn/forex/exchange-quotations.shtml",
       "color": "#004098",
       "status": "success",
-      "rate_change": 0.0501,
-      "rate_change_percent": 0.54
+      "rate_change": -0.0275,
+      "rate_change_percent": -0.29
+    },
+    {
+      "bank_code": "ABC",
+      "bank_name": "中国农业银行",
+      "short_name": "农行",
+      "rate": 9.342,
+      "rate_type": "现汇卖出价",
+      "publish_time": "",
+      "source_url": "https://ewealth.abchina.com/foreignexchange/listprice/",
+      "color": "#007f4e",
+      "status": "success",
+      "rate_change": -0.0269,
+      "rate_change_percent": -0.29
     },
     {
       "bank_code": "CMB",
       "bank_name": "招商银行",
       "short_name": "招行",
-      "rate": 9.3771,
+      "rate": 9.3481,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://fx.cmbchina.com/hq/",
       "color": "#c41230",
       "status": "success",
-      "rate_change": 0.0604,
-      "rate_change_percent": 0.65
+      "rate_change": -0.029,
+      "rate_change_percent": -0.31
     },
     {
       "bank_code": "ICBC",
       "bank_name": "中国工商银行",
       "short_name": "工行",
-      "rate": 9.382,
+      "rate": 9.3482,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://www.icbc.com.cn/column/1438058341489590354.html",
       "color": "#c4161c",
       "status": "success",
-      "rate_change": 0.059,
-      "rate_change_percent": 0.63
+      "rate_change": -0.0338,
+      "rate_change_percent": -0.36
     },
     {
       "bank_code": "BOC",
       "bank_name": "中国银行",
       "short_name": "中行",
-      "rate": 9.4245,
+      "rate": 9.3519,
       "rate_type": "现汇卖出价",
-      "publish_time": "2026/02/23 10:53:11",
+      "publish_time": "2026/02/24 10:48:16",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
-      "rate_change": 0.0,
-      "rate_change_percent": 0.0
+      "rate_change": -0.0726,
+      "rate_change_percent": -0.77
     }
   ],
   "bank_count": 5,
-  "fetched_at_utc": "2026-02-23T02:56:47.085261+00:00",
-  "fetched_at_beijing": "2026-02-23 02:56:47",
+  "fetched_at_utc": "2026-02-24T02:54:06.885343+00:00",
+  "fetched_at_beijing": "2026-02-24 02:54:06",
   "status": "success"
 }
