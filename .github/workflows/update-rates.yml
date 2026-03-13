@@ -50,6 +50,7 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           else
             git commit -m "Update multi-bank GBP rates - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+            git pull --rebase origin main
             git push
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
