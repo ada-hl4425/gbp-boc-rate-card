@@ -1,4 +1,4 @@
-name: 0Update Multi-Bank GBP Rate
+name: Update Multi-Bank GBP Rate
 
 on:
   schedule:
@@ -76,7 +76,7 @@ jobs:
           fi
 
       - name: Create failure issue
-        if: failure() || steps.read_rate.outputs.status == 'error'
+        if: always() && (steps.read_rate.outputs.status != 'success' || steps.read_rate.outputs.bank_count == '0')
         uses: actions/github-script@v7
         with:
           script: |
@@ -126,7 +126,7 @@ jobs:
             }
 
       - name: Close success issues
-        if: success() && steps.read_rate.outputs.status == 'success'
+        if: always() && steps.read_rate.outputs.status == 'success' && steps.read_rate.outputs.bank_count != '0'
         uses: actions/github-script@v7
         with:
           script: |
