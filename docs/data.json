@@ -3,63 +3,63 @@
   "pair": "GBP/CNY",
   "rate_type": "现汇卖出价",
   "best_bank": "ABC",
-  "best_rate": 9.2061,
+  "best_rate": 9.2023,
   "banks": [
     {
       "bank_code": "ABC",
       "bank_name": "中国农业银行",
       "short_name": "农行",
-      "rate": 9.2061,
+      "rate": 9.2023,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://ewealth.abchina.com/foreignexchange/listprice/",
       "color": "#007f4e",
       "status": "success",
-      "rate_change": 0.0,
-      "rate_change_percent": 0.0
+      "rate_change": -0.0038,
+      "rate_change_percent": -0.04
     },
     {
       "bank_code": "ICBC",
       "bank_name": "中国工商银行",
       "short_name": "工行",
-      "rate": 9.211,
+      "rate": 9.2073,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://www.icbc.com.cn/column/1438058341489590354.html",
       "color": "#c4161c",
       "status": "success",
-      "rate_change": -0.0019,
-      "rate_change_percent": -0.02
+      "rate_change": -0.0037,
+      "rate_change_percent": -0.04
     },
     {
       "bank_code": "CMB",
       "bank_name": "招商银行",
       "short_name": "招行",
-      "rate": 9.2113,
+      "rate": 9.2079,
       "rate_type": "现汇卖出价",
       "publish_time": "",
       "source_url": "https://fx.cmbchina.com/hq/",
       "color": "#c41230",
       "status": "success",
-      "rate_change": -0.0011,
-      "rate_change_percent": -0.01
+      "rate_change": -0.0034,
+      "rate_change_percent": -0.04
     },
     {
       "bank_code": "BOC",
       "bank_name": "中国银行",
       "short_name": "中行",
-      "rate": 9.2144,
+      "rate": 9.2106,
       "rate_type": "现汇卖出价",
-      "publish_time": "2026/08/24 09:45:12",
+      "publish_time": "2026/08/25 09:43:43",
       "source_url": "https://www.boc.cn/sourcedb/whpj/",
       "color": "#e60012",
       "status": "success",
-      "rate_change": 0.0027,
-      "rate_change_percent": 0.03
+      "rate_change": -0.0038,
+      "rate_change_percent": -0.04
     }
   ],
   "bank_count": 4,
-  "fetched_at_utc": "2026-08-24T01:52:07.782806+00:00",
-  "fetched_at_beijing": "2026-08-24 01:52:07",
+  "fetched_at_utc": "2026-08-25T01:46:31.833067+00:00",
+  "fetched_at_beijing": "2026-08-25 01:46:31",
   "status": "success"
 }
